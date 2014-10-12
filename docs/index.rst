@@ -16,6 +16,13 @@ Contents:
 
 .. include:: ../readme.rst
 
+.. include:: ../tests/readme.rst
+
+.. include:: ../docs/readme.rst
+
+.. include:: ../docs/notebooks/readme.rst
+
+
 Indices and tables
 ==================
 
