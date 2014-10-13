@@ -1,1 +1,279 @@
-"First commit" 
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>FormulaPy Documentation &mdash; FormulaPy 0.1 documentation</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="top" title="FormulaPy 0.1 documentation" href="#"/>
+        <link rel="next" title="Core Components" href="core.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        <a href="#" class="fa fa-home"> FormulaPy</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+        
+            <ul>
+<li class="toctree-l1"><a class="reference internal" href="core.html">Core Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Analysis Notebooks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/Placeholder_Notebook.html">Embedding IPython Notebook</a></li>
+</ul>
+</li>
+</ul>
+
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="#">FormulaPy</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="#">Docs</a> &raquo;</li>
+      
+    <li>FormulaPy Documentation</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          <a href="_sources/index.txt" rel="nofollow"> View page source</a>
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            
+  <div class="section" id="formulapy-documentation">
+<h1>FormulaPy Documentation<a class="headerlink" href="#formulapy-documentation" title="Permalink to this headline">¶</a></h1>
+<p>Contents:</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="core.html">Core Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Analysis Notebooks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/Placeholder_Notebook.html">Embedding IPython Notebook</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="formulapy">
+<h1>FormulaPy<a class="headerlink" href="#formulapy" title="Permalink to this headline">¶</a></h1>
+<p>A Formula 1 simulation in python.</p>
+<div class="section" id="background">
+<h2>Background<a class="headerlink" href="#background" title="Permalink to this headline">¶</a></h2>
+<p>Developed after first concept introduced by reddit user <a class="reference external" href="http://www.reddit.com/user/whatthefat">whatthefat</a>.
+He developed it in Matlab (<a class="reference external" href="https://drive.google.com/folderview?id=0BwS1t9oxSE-6N2xoQnNEdTlIVjQ&amp;usp=sharing">download here</a>),
+but a number of people wanted to see it in something a bit more powerful and available to others.</p>
+</div>
+<div class="section" id="approach">
+<h2>Approach<a class="headerlink" href="#approach" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="architecture">
+<h3>Architecture<a class="headerlink" href="#architecture" title="Permalink to this headline">¶</a></h3>
+<p>I&#8217;ve had good luck in building a thin object-oriented interface as a thin wrapper around lower level data structures.
+To the user, this makes generating a simulation more intuitive, and abstracts the design from specific
+implementations. So, we build the simulation up using a number of reusable building blocks,
+then use that information to build the internal data structures for simulation. At the moment,
+the plan would be to use Pandas/Numpy/Numba for the internal calculations. I have been looking for an excuse to use
+Blaze (a higher level abstraction) as well, so that could be another option.</p>
+<div class="section" id="project-structure">
+<h4>Project Structure<a class="headerlink" href="#project-structure" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li>docs: the folder where sphinx documentation generation will be performed</li>
+<li>tests: the folder where pytest-compatible tests will be collected</li>
+<li>formulapy.core: the fundamental and generic classes used to define specific models</li>
+<li>formulapy.models: holds a package for each season of models. This provides a user to build models for &#8220;what-if&#8221; scenarios, or to predict a given race&#8217;s performance</li>
+<li>formulapy.models.s2014: the first package to hold the current year&#8217;s models</li>
+<li>formulapy/data: will be the place to put any sql, nosql, or csv files</li>
+</ul>
+</div>
+<div class="section" id="surrogate-models">
+<h4>Surrogate Models<a class="headerlink" href="#surrogate-models" title="Permalink to this headline">¶</a></h4>
+<p>The use of modular components should allow incorporation of higher fidelity models over time as desired,
+without changes to the rest of the simulation. We can also take a high fidelity model, run it offline,
+then use something like a neural network (see ffnet) to surrogate the higher fidelity model.</p>
+</div>
+</div>
+<div class="section" id="representing-uncertainty">
+<h3>Representing Uncertainty<a class="headerlink" href="#representing-uncertainty" title="Permalink to this headline">¶</a></h3>
+<p>It is important in simulations to represent the uncertainty in estimates. Therefor,
+instead of specifying a discrete value for a parameter, we should help the user represent the distribution around
+that value. The result should be not be a probability of success for each driver,
+but a distribution around a probability of success for each driver.</p>
+<p>We might want to run the simulation far in advance, then update the statistics when given new information (Bayesian).
+So, given information on qualification, or even real time information of how the race is unfolding,
+we should be able to reduce the uncertainty of the prediction as we get more data.</p>
+</div>
+<div class="section" id="data-storage">
+<h3>Data Storage<a class="headerlink" href="#data-storage" title="Permalink to this headline">¶</a></h3>
+<p>For now, I&#8217;ll plan on using CSVs to store the data since there isn&#8217;t massive amounts of F1 data that I&#8217;m aware of,
+and ease of use for contributions.</p>
+</div>
+</div>
+<div class="section" id="development">
+<h2>Development<a class="headerlink" href="#development" title="Permalink to this headline">¶</a></h2>
+<p>The goal will be to utilize tools/libraries that provide anyone the ability to contribute with no cost. The only
+thing I have identified that can cost money is PyCharm, but there is a free community version available. Spyder and
+IPython Notebook should be completely adequate.</p>
+<div class="section" id="current-planned-requirements">
+<h3>Current Planned Requirements<a class="headerlink" href="#current-planned-requirements" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Base: Anaconda or Wakiri (web-based)</li>
+<li>IDE: PyCharm, IPython Notebook, Spyder (IPython and Spyder come with Anaconda)</li>
+<li>Data Structures: Pandas/Numpy</li>
+<li>Statistics: SciPy</li>
+<li>Testing: PyTest</li>
+<li>Docs: Sphinx, sphinx_rtd_theme</li>
+<li>Visualization: Seaborn (stats), Bokeh (interactive charts), Matplotlib (standard plots)</li>
+</ul>
+</div>
+</div>
+<div class="section" id="pytest">
+<h2>Pytest<a class="headerlink" href="#pytest" title="Permalink to this headline">¶</a></h2>
+<p>Pytest can run python unittests and nose tests, and provide a way to quickly create tests from functions. All of the
+tests will be placed in this tests folder and are automatically found by pytest based on having the keyword &#8220;test&#8221; in
+the name of the python file and function. They can be separated out into different files as needed for organization.</p>
+<a class="reference internal image-reference" href="_images/pytest_pycharm_config.png"><img alt="Pytest Pycharm Config" class="align-center" src="_images/pytest_pycharm_config.png" style="width: 819.0px; height: 527.25px;" /></a>
+</div>
+<div class="section" id="sphinx-documentation-generation">
+<h2>Sphinx Documentation Generation<a class="headerlink" href="#sphinx-documentation-generation" title="Permalink to this headline">¶</a></h2>
+<p>Only the source code will be included in the repository. _build, _static, and notebooks/.ipynb_checkpoints are
+excluded with .gitignore.</p>
+<a class="reference internal image-reference" href="_images/sphinx_pycharm_config.png"><img alt="Sphinx Pycharm Config" class="align-center" src="_images/sphinx_pycharm_config.png" style="width: 818.25px; height: 526.5px;" /></a>
+</div>
+<div class="section" id="adding-ipython-notebooks-to-sphinx-docs">
+<h2>Adding IPython Notebooks to Sphinx Docs<a class="headerlink" href="#adding-ipython-notebooks-to-sphinx-docs" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li>Place IPython notebook in this directory</li>
+<li>Create a RST file with the same name as the notebook (convention, doesn&#8217;t have to be the same)</li>
+<li>Use the &#8221;.. notebook:: thenameofyournotebook.ipynb&#8221; directive to tell Sphinx to execute and insert the notebook</li>
+<li>Reference thenameofyournotebook.rst file from some higher level Sphinx RST file</li>
+</ol>
+</div>
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><a class="reference internal" href="genindex.html"><em>Index</em></a></li>
+<li><a class="reference internal" href="py-modindex.html"><em>Module Index</em></a></li>
+<li><a class="reference internal" href="search.html"><em>Search Page</em></a></li>
+</ul>
+</div>
+
+
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="core.html" class="btn btn-neutral float-right" title="Core Components"/>Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2014, Nick Roth.
+    </p>
+  </div>
+
+  <a href="https://github.com/snide/sphinx_rtd_theme">Sphinx theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
