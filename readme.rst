@@ -4,6 +4,8 @@ FormulaPy
 
 A Formula 1 simulation in python.
 
+`Full Documentation <http://formulapy.readthedocs.org/en/latest/>`_
+
 
 Background
 ----------
