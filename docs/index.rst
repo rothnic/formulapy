@@ -13,14 +13,13 @@ Contents:
 
    core
    examples
+   data_readme
+   development
 
 .. include:: ../readme.rst
 
-.. include:: ../tests/readme.rst
 
-.. include:: ../docs/readme.rst
-
-.. include:: ../docs/notebooks/readme.rst
+See full :ref:`development_docs` documentation for more configuration information
 
 
 Indices and tables

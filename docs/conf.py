@@ -15,6 +15,8 @@
 import sys
 import os
 
+#ToDo: write tool to automatically deploy docs to gh-pages under windows
+
 # on_rtd is whether we are on readthedocs.org
 import os
 on_rtd = os.environ.get('READTHEDOCS', None) == 'True'

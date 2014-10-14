@@ -1,7 +1,7 @@
 .. analysis documentation
 
-Analysis Notebooks
-==================
+Examples
+^^^^^^^^
 
 .. toctree::
 

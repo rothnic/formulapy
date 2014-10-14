@@ -2,8 +2,9 @@ __author__ = 'nickroth'
 
 
 class Driver(object):
-    def __init__(self, name, car, seq_wins=0):
+    def __init__(self, name, num, car, seq_wins=0):
         self.name = name
+        self.number = num
         self.car = car
         self.seq_wins = seq_wins
 
@@ -17,23 +18,33 @@ class Track(object):
 
 
 class TrackLayout(object):
-    def __init__(self, laps, dist=None, sectors=None):
-        assert(dist is not sectors) # If list of sectors is not provided, then we need dist
+    def __init__(self, laps, lap_dist=None, sectors=None):
+        assert(lap_dist is not sectors) # If list of sectors is not provided, then we need dist
         self.sectors = sectors
+        self._distance = lap_dist
 
     @property
     def distance(self):
-        return sum([sec.distance for sec in self.sectors])
+        if self.sectors is not None:
+            return sum([sec.distance for sec in self.sectors])
+        else:
+            return self._distance
+
+
+class DRS_Config(object):
+    def __init__(self, drs_zones):
+        self.drs_zones = drs_zones
+
+
+class DRS_Zone(object):
+    def __init__(self, detect_km, activate_km):
+        self.detect_km = detect_km
+        self.activate_km = activate_km
 
 
 class Sector(object):
     def __init__(self, dist):
         self.distance = dist
-
-
-class DRS_Config(object):
-    def __init__(self):
-        pass
 
 
 class Corner(object):
@@ -103,3 +114,25 @@ class Tire(object):
         :return:
         """
         pass #ToDo: implement distribution for when this instance of tire reaches degradation states (binomial?)
+
+
+class Event(object):
+    def __init__(self):
+        pass
+
+
+class Rain(Event):
+    def __init__(self):
+        super(Rain, self).__init__()
+
+
+class Overtake(Event):
+    def __init__(self):
+        super(Overtake, self).__init__()
+
+
+class Wreck(Event):
+    def __init__(self):
+        super(Wreck, self).__init__()
+
+
