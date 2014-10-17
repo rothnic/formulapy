@@ -12,8 +12,9 @@ Contents:
    :maxdepth: 2
 
    core
-   examples
+   models/models
    data_readme
+   examples
    development
 
 .. include:: ../readme.rst
