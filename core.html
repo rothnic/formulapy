@@ -29,7 +29,7 @@
 
   
     <link rel="top" title="FormulaPy 0.1 documentation" href="index.html"/>
-        <link rel="next" title="Analysis Notebooks" href="examples.html"/>
+        <link rel="next" title="Models" href="models/models.html"/>
         <link rel="prev" title="FormulaPy Documentation" href="index.html"/> 
 
   
@@ -59,8 +59,26 @@
         
             <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="">Core Components</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html">Analysis Notebooks</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="models/models.html">Models</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="models/models.html#module-formulapy.models.tracks">Tracks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="models/models.html#seasons">Seasons</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="data_readme.html">Data Processing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="data_readme.html#data-parsing">Data Parsing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data_readme.html#data-tools">Data Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data_readme.html#data-sources">Data Sources</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/Parsing_FIA_PDF.html">Parsing FIA PDF Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/Placeholder_Notebook.html">Embedding IPython Notebook</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="development.html">Development</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="testing_readme.html">Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="readme.html">Documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/readme.html">IPython Notebooks</a></li>
 </ul>
 </li>
 </ul>
@@ -116,17 +134,32 @@
 
 <dl class="class">
 <dt id="formulapy.core.DRS_Config">
-<em class="property">class </em><tt class="descclassname">formulapy.core.</tt><tt class="descname">DRS_Config</tt><a class="reference internal" href="_modules/formulapy/core.html#DRS_Config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#formulapy.core.DRS_Config" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">formulapy.core.</tt><tt class="descname">DRS_Config</tt><big>(</big><em>drs_zones</em><big>)</big><a class="reference internal" href="_modules/formulapy/core.html#DRS_Config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#formulapy.core.DRS_Config" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="formulapy.core.DRS_Zone">
+<em class="property">class </em><tt class="descclassname">formulapy.core.</tt><tt class="descname">DRS_Zone</tt><big>(</big><em>detect_km</em>, <em>activate_km</em><big>)</big><a class="reference internal" href="_modules/formulapy/core.html#DRS_Zone"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#formulapy.core.DRS_Zone" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="class">
 <dt id="formulapy.core.Driver">
-<em class="property">class </em><tt class="descclassname">formulapy.core.</tt><tt class="descname">Driver</tt><big>(</big><em>name</em>, <em>car</em>, <em>seq_wins=0</em><big>)</big><a class="reference internal" href="_modules/formulapy/core.html#Driver"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#formulapy.core.Driver" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">formulapy.core.</tt><tt class="descname">Driver</tt><big>(</big><em>name</em>, <em>num</em>, <em>car</em>, <em>seq_wins=0</em><big>)</big><a class="reference internal" href="_modules/formulapy/core.html#Driver"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#formulapy.core.Driver" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="class">
 <dt id="formulapy.core.Engine">
 <em class="property">class </em><tt class="descclassname">formulapy.core.</tt><tt class="descname">Engine</tt><big>(</big><em>hp</em>, <em>fail_dist=None</em><big>)</big><a class="reference internal" href="_modules/formulapy/core.html#Engine"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#formulapy.core.Engine" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="formulapy.core.Event">
+<em class="property">class </em><tt class="descclassname">formulapy.core.</tt><tt class="descname">Event</tt><a class="reference internal" href="_modules/formulapy/core.html#Event"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#formulapy.core.Event" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="formulapy.core.Overtake">
+<em class="property">class </em><tt class="descclassname">formulapy.core.</tt><tt class="descname">Overtake</tt><a class="reference internal" href="_modules/formulapy/core.html#Overtake"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#formulapy.core.Overtake" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="class">
@@ -148,6 +181,11 @@
 <dd></dd></dl>
 
 </dd></dl>
+
+<dl class="class">
+<dt id="formulapy.core.Rain">
+<em class="property">class </em><tt class="descclassname">formulapy.core.</tt><tt class="descname">Rain</tt><a class="reference internal" href="_modules/formulapy/core.html#Rain"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#formulapy.core.Rain" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="class">
 <dt id="formulapy.core.Sector">
@@ -196,13 +234,18 @@
 
 <dl class="class">
 <dt id="formulapy.core.TrackLayout">
-<em class="property">class </em><tt class="descclassname">formulapy.core.</tt><tt class="descname">TrackLayout</tt><big>(</big><em>laps</em>, <em>dist=None</em>, <em>sectors=None</em><big>)</big><a class="reference internal" href="_modules/formulapy/core.html#TrackLayout"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#formulapy.core.TrackLayout" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">formulapy.core.</tt><tt class="descname">TrackLayout</tt><big>(</big><em>laps</em>, <em>lap_dist=None</em>, <em>sectors=None</em><big>)</big><a class="reference internal" href="_modules/formulapy/core.html#TrackLayout"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#formulapy.core.TrackLayout" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="attribute">
 <dt id="formulapy.core.TrackLayout.distance">
 <tt class="descname">distance</tt><a class="reference internal" href="_modules/formulapy/core.html#TrackLayout.distance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#formulapy.core.TrackLayout.distance" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
+
+<dl class="class">
+<dt id="formulapy.core.Wreck">
+<em class="property">class </em><tt class="descclassname">formulapy.core.</tt><tt class="descname">Wreck</tt><a class="reference internal" href="_modules/formulapy/core.html#Wreck"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#formulapy.core.Wreck" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </div>
 
@@ -212,7 +255,7 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="examples.html" class="btn btn-neutral float-right" title="Analysis Notebooks"/>Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="models/models.html" class="btn btn-neutral float-right" title="Models"/>Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="index.html" class="btn btn-neutral" title="FormulaPy Documentation"><span class="fa fa-arrow-circle-left"></span> Previous</a>

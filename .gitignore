@@ -56,3 +56,6 @@ docs/notebooks/.ipynb_checkpoints/
 
 # PyBuilder
 target/
+
+# Data
+data/*.pdf

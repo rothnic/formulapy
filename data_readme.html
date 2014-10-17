@@ -1,0 +1,414 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Data Processing &mdash; FormulaPy 0.1 documentation</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="top" title="FormulaPy 0.1 documentation" href="index.html"/>
+        <link rel="next" title="Examples" href="examples.html"/>
+        <link rel="prev" title="2014 Season" href="models/s2014.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        <a href="index.html" class="fa fa-home"> FormulaPy</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+        
+            <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="core.html">Core Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="models/models.html">Models</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="models/models.html#module-formulapy.models.tracks">Tracks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="models/models.html#seasons">Seasons</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Data Processing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#data-parsing">Data Parsing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#data-tools">Data Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#data-sources">Data Sources</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/Parsing_FIA_PDF.html">Parsing FIA PDF Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/Placeholder_Notebook.html">Embedding IPython Notebook</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="development.html">Development</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="testing_readme.html">Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="readme.html">Documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/readme.html">IPython Notebooks</a></li>
+</ul>
+</li>
+</ul>
+
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">FormulaPy</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>Data Processing</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          <a href="_sources/data_readme.txt" rel="nofollow"> View page source</a>
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            
+  <div class="section" id="data-processing">
+<h1>Data Processing<a class="headerlink" href="#data-processing" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="data-parsing">
+<h2>Data Parsing<a class="headerlink" href="#data-parsing" title="Permalink to this headline">¶</a></h2>
+<p>F1 data isn&#8217;t quite as available as something like college football data, and at best I have only been able to find
+down to the lap. I have not found any source that will just let you directly download CSV files,
+and the most open one being ergast&#8217;s api for non-commercial use. The majority of the data used for modeling will
+likely have to come from web-scraping and/or parsing PDFs.</p>
+</div>
+<div class="section" id="data-tools">
+<h2>Data Tools<a class="headerlink" href="#data-tools" title="Permalink to this headline">¶</a></h2>
+<p>The data parsing tools exist in the <tt class="xref py py-mod docutils literal"><span class="pre">formulapy.data</span></tt> module and any local files will go into the data
+folder that is outside the scope of the actual <tt class="xref py py-mod docutils literal"><span class="pre">formulapy</span></tt> module. Local files, like fia pdf files,
+are ignored through the .gitignore file, so aren&#8217;t and cannot be included in the repository.</p>
+<span class="target" id="module-formulapy.data.fia.parsers"></span><dl class="function">
+<dt id="formulapy.data.fia.parsers.append_time_info">
+<tt class="descclassname">formulapy.data.fia.parsers.</tt><tt class="descname">append_time_info</tt><big>(</big><em>driver</em>, <em>idx</em>, <em>pos</em>, <em>row</em><big>)</big><a class="reference internal" href="_modules/formulapy/data/fia/parsers.html#append_time_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#formulapy.data.fia.parsers.append_time_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Factors out some common logic for getting the time information for the driver based on their relative position in
+the row.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>driver</strong> &#8211; dict with driver info</li>
+<li><strong>idx</strong> &#8211; the indices of the columns where times should be</li>
+<li><strong>pos</strong> &#8211; the last column that this driver shouldn&#8217;t have values past</li>
+<li><strong>row</strong> &#8211; the current row being processed</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">None, driver dicts are modified directly, so no return required</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="formulapy.data.fia.parsers.format_times">
+<tt class="descclassname">formulapy.data.fia.parsers.</tt><tt class="descname">format_times</tt><big>(</big><em>t</em><big>)</big><a class="reference internal" href="_modules/formulapy/data/fia/parsers.html#format_times"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#formulapy.data.fia.parsers.format_times" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts a list of time strings into a list of floats, representing the number of seconds for the given lap.
+Assumes the values are always minutes:seconds.milliseconds.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>t</strong> &#8211; list of time strings</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">list of times as floats</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="formulapy.data.fia.parsers.get_drivers">
+<tt class="descclassname">formulapy.data.fia.parsers.</tt><tt class="descname">get_drivers</tt><big>(</big><em>table</em><big>)</big><a class="reference internal" href="_modules/formulapy/data/fia/parsers.html#get_drivers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#formulapy.data.fia.parsers.get_drivers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Takes an input of a pdftable, corresponding to the data on one page of fia lap timing report from qualifications
+or practice. See <a class="reference external" href="http://www.fia.com/sites/default/files/championship/event_report/documents/2014_15_JPN_F1_Q0_Timing_QualifyingSessionLapTimes_V01.pdf">Japan Qualifying Report</a> for an example PDF that this function helps parse.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>table</strong> &#8211; pdftable from calling <a class="reference internal" href="#formulapy.data.fia.parsers.parse_laptimes" title="formulapy.data.fia.parsers.parse_laptimes"><tt class="xref py py-func docutils literal"><span class="pre">parse_laptimes()</span></tt></a></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><ul class="simple">
+<li>list of python dicts, where each dict represents one driver on this page</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="formulapy.data.fia.parsers.init_driver">
+<tt class="descclassname">formulapy.data.fia.parsers.</tt><tt class="descname">init_driver</tt><big>(</big><em>driver_strings</em>, <em>driver_idx</em><big>)</big><a class="reference internal" href="_modules/formulapy/data/fia/parsers.html#init_driver"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#formulapy.data.fia.parsers.init_driver" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initializes the driver dict and stores values from the driver_strings into it, if they exist</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>driver_strings</strong> &#8211; tuple with driver number and name within it</li>
+<li><strong>driver_idx</strong> &#8211; 0, 1, or 2, representing the index of the 3 drivers processed at a time</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">initialized driver dict, where empty if there was no info for the given idx</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="formulapy.data.fia.parsers.parse_laptimes">
+<tt class="descclassname">formulapy.data.fia.parsers.</tt><tt class="descname">parse_laptimes</tt><big>(</big><em>filepath</em><big>)</big><a class="reference internal" href="_modules/formulapy/data/fia/parsers.html#parse_laptimes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#formulapy.data.fia.parsers.parse_laptimes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parses a PDF of qualifying or practice report lap times from the FIA into data that we can further analyze. See
+an example at <a class="reference external" href="http://www.fia.com/sites/default/files/championship/event_report/documents/2014_15_JPN_F1_Q0_Timing_QualifyingSessionLapTimes_V01.pdf">Japan Qualifying Report</a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filepath</strong> &#8211; a string pathname to the pdf on your local computer</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><ul class="simple">
+<li>a pandas dataframe with column for number, name, and times</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="formulapy.data.fia.parsers.split_joined_times">
+<tt class="descclassname">formulapy.data.fia.parsers.</tt><tt class="descname">split_joined_times</tt><big>(</big><em>t</em><big>)</big><a class="reference internal" href="_modules/formulapy/data/fia/parsers.html#split_joined_times"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#formulapy.data.fia.parsers.split_joined_times" title="Permalink to this definition">¶</a></dt>
+<dd><p>Splits times that can sometimes be joined together based on how the PDF is formatted. If it doesn&#8217;t detect joined
+times, then it will just return the single time in a list.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>t</strong> &#8211; a string with likely times in it</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">a list containing individual times</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="formulapy.data.fia.parsers.split_num_str">
+<tt class="descclassname">formulapy.data.fia.parsers.</tt><tt class="descname">split_num_str</tt><big>(</big><em>s</em><big>)</big><a class="reference internal" href="_modules/formulapy/data/fia/parsers.html#split_num_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#formulapy.data.fia.parsers.split_num_str" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="data-sources">
+<h2>Data Sources<a class="headerlink" href="#data-sources" title="Permalink to this headline">¶</a></h2>
+<p>When utilizing web-based data sources, you must be considerate and abide by their requests. This means that much of
+the data available cannot be directly rehosted. Here is a list of sources that could be used for gathering data to
+use in building models.</p>
+<ul>
+<li><dl class="first docutils">
+<dt>FIA</dt>
+<dd><ul class="first last simple">
+<li><a class="reference external" href="http://www.fia.com/championship/reports/fia-formula-1-world-championship/2014/2014-japanese-grand-prix-race">Japanese Grand Prix Example</a></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>statsF1.com</dt>
+<dd><ul class="first last simple">
+<li><a class="reference external" href="http://www.statsf1.com/en/2014/russie/classement.aspx">Russian Grand Prix Example</a></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>f1-facts.com</dt>
+<dd><ul class="first last simple">
+<li><a class="reference external" href="http://f1-facts.com/stats/drivers">Driver Stats Example</a></li>
+<li><a class="reference external" href="https://github.com/oyarzun/atom-rst-preview">Track Sections Example</a></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>chicanef1.com</dt>
+<dd><ul class="first last simple">
+<li><a class="reference external" href="http://www.chicanef1.com/indiv.pl?name=Lewis%20Hamilton&amp;type=D">Driver Example - Lewis</a></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>f1-stats.info</dt>
+<dd><ul class="first last simple">
+<li><a class="reference external" href="http://www.f1-stats.info/profiles/drivers/fernando_alonso.html">Driver Example - Fernando</a></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>vivaf1.com</dt>
+<dd><ul class="first last simple">
+<li><a class="reference external" href="http://www.vivaf1.com/performance.php">Driver Performance</a></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>f1-fansite.com</dt>
+<dd><ul class="first last simple">
+<li><a class="reference external" href="http://www.f1-fansite.com/f1-teams/mercedes/">Mercedes Performance</a></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>ergast.com api</dt>
+<dd><ul class="first last simple">
+<li><a class="reference external" href="http://ergast.com/api/f1/current/last/results">Race Results</a></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>f1-data.com</dt>
+<dd><ul class="first last simple">
+<li><a class="reference external" href="http://www.f1-data.com/script/top/index.php">homepage, not great</a></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>f1fanatic.co.uk</dt>
+<dd><ul class="first last simple">
+<li><a class="reference external" href="http://www.f1fanatic.co.uk/statistics/2013-f1-statistics/race-data/">2013 Summary</a></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="examples.html" class="btn btn-neutral float-right" title="Examples"/>Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="models/s2014.html" class="btn btn-neutral" title="2014 Season"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2014, Nick Roth.
+    </p>
+  </div>
+
+  <a href="https://github.com/snide/sphinx_rtd_theme">Sphinx theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

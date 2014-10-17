@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Adding IPython Notebooks to Sphinx Docs &mdash; FormulaPy 0.1 documentation</title>
+  <title>Working with IPython Notebooks &mdash; FormulaPy 0.1 documentation</title>
   
 
   
@@ -28,7 +28,9 @@
   
 
   
-    <link rel="top" title="FormulaPy 0.1 documentation" href="../index.html"/> 
+    <link rel="top" title="FormulaPy 0.1 documentation" href="../index.html"/>
+        <link rel="up" title="Development" href="../development.html"/>
+        <link rel="prev" title="Sphinx Documentation Generation" href="../readme.html"/> 
 
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
@@ -55,10 +57,28 @@
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
         
         
-            <ul>
+            <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../core.html">Core Components</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../examples.html">Analysis Notebooks</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="../models/models.html">Models</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../models/models.html#module-formulapy.models.tracks">Tracks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../models/models.html#seasons">Seasons</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../data_readme.html">Data Processing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../data_readme.html#data-parsing">Data Parsing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../data_readme.html#data-tools">Data Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../data_readme.html#data-sources">Data Sources</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Parsing_FIA_PDF.html">Parsing FIA PDF Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Placeholder_Notebook.html">Embedding IPython Notebook</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="../development.html">Development</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../testing_readme.html">Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../readme.html">Documentation</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="">IPython Notebooks</a></li>
 </ul>
 </li>
 </ul>
@@ -84,7 +104,9 @@
   <ul class="wy-breadcrumbs">
     <li><a href="../index.html">Docs</a> &raquo;</li>
       
-    <li>Adding IPython Notebooks to Sphinx Docs</li>
+          <li><a href="../development.html">Development</a> &raquo;</li>
+      
+    <li>Working with IPython Notebooks</li>
       <li class="wy-breadcrumbs-aside">
         
           <a href="../_sources/notebooks/readme.txt" rel="nofollow"> View page source</a>
@@ -95,19 +117,38 @@
 </div>
           <div role="main">
             
-  <div class="section" id="adding-ipython-notebooks-to-sphinx-docs">
-<h1>Adding IPython Notebooks to Sphinx Docs<a class="headerlink" href="#adding-ipython-notebooks-to-sphinx-docs" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="working-with-ipython-notebooks">
+<h1>Working with IPython Notebooks<a class="headerlink" href="#working-with-ipython-notebooks" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="running-ipython-notebooks">
+<h2>Running IPython Notebooks<a class="headerlink" href="#running-ipython-notebooks" title="Permalink to this headline">¶</a></h2>
 <ol class="arabic simple">
-<li>Place IPython notebook in this directory</li>
+<li>Open command line</li>
+<li><tt class="docutils literal"><span class="pre">CD</span></tt> to the directory where the notebook exists</li>
+<li>Execute <tt class="docutils literal"><span class="pre">ipython</span> <span class="pre">notebook</span></tt></li>
+<li>Click on the notebook when the browser has loaded</li>
+</ol>
+</div>
+<div class="section" id="adding-ipython-notebooks-to-sphinx-docs">
+<h2>Adding IPython Notebooks to Sphinx Docs<a class="headerlink" href="#adding-ipython-notebooks-to-sphinx-docs" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li>Place IPython notebook in the docs/notebooks directory</li>
 <li>Create a RST file with the same name as the notebook (convention, doesn&#8217;t have to be the same)</li>
-<li>Use the &#8221;.. notebook:: thenameofyournotebook.ipynb&#8221; directive to tell Sphinx to execute and insert the notebook</li>
+<li>Use the <tt class="docutils literal"><span class="pre">..</span> <span class="pre">notebook::</span> <span class="pre">thenameofyournotebook.ipynb</span></tt> rst directive within the notebook&#8217;s rst file to tell Sphinx to execute and insert the notebook</li>
 <li>Reference thenameofyournotebook.rst file from some higher level Sphinx RST file</li>
 </ol>
+</div>
 </div>
 
 
           </div>
           <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="../readme.html" class="btn btn-neutral" title="Sphinx Documentation Generation"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
   
 
   <hr/>

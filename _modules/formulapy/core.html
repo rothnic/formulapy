@@ -58,8 +58,26 @@
         
             <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../core.html">Core Components</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../examples.html">Analysis Notebooks</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../models/models.html">Models</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../models/models.html#module-formulapy.models.tracks">Tracks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../models/models.html#seasons">Seasons</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../data_readme.html">Data Processing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../data_readme.html#data-parsing">Data Parsing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../data_readme.html#data-tools">Data Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../data_readme.html#data-sources">Data Sources</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples.html">Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/Parsing_FIA_PDF.html">Parsing FIA PDF Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../notebooks/Placeholder_Notebook.html">Embedding IPython Notebook</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../development.html">Development</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../testing_readme.html">Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../readme.html">Documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/readme.html">IPython Notebooks</a></li>
 </ul>
 </li>
 </ul>
@@ -101,8 +119,9 @@
 
 
 <div class="viewcode-block" id="Driver"><a class="viewcode-back" href="../../core.html#formulapy.core.Driver">[docs]</a><span class="k">class</span> <span class="nc">Driver</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">car</span><span class="p">,</span> <span class="n">seq_wins</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">num</span><span class="p">,</span> <span class="n">car</span><span class="p">,</span> <span class="n">seq_wins</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">number</span> <span class="o">=</span> <span class="n">num</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">car</span> <span class="o">=</span> <span class="n">car</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">seq_wins</span> <span class="o">=</span> <span class="n">seq_wins</span>
 
@@ -116,23 +135,33 @@
 
 </div>
 <div class="viewcode-block" id="TrackLayout"><a class="viewcode-back" href="../../core.html#formulapy.core.TrackLayout">[docs]</a><span class="k">class</span> <span class="nc">TrackLayout</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">laps</span><span class="p">,</span> <span class="n">dist</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">sectors</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
-        <span class="k">assert</span><span class="p">(</span><span class="n">dist</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">sectors</span><span class="p">)</span> <span class="c"># If list of sectors is not provided, then we need dist</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">laps</span><span class="p">,</span> <span class="n">lap_dist</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">sectors</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">assert</span><span class="p">(</span><span class="n">lap_dist</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">sectors</span><span class="p">)</span> <span class="c"># If list of sectors is not provided, then we need dist</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sectors</span> <span class="o">=</span> <span class="n">sectors</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_distance</span> <span class="o">=</span> <span class="n">lap_dist</span>
 
     <span class="nd">@property</span>
 <div class="viewcode-block" id="TrackLayout.distance"><a class="viewcode-back" href="../../core.html#formulapy.core.TrackLayout.distance">[docs]</a>    <span class="k">def</span> <span class="nf">distance</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">sum</span><span class="p">([</span><span class="n">sec</span><span class="o">.</span><span class="n">distance</span> <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sectors</span><span class="p">])</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sectors</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">sum</span><span class="p">([</span><span class="n">sec</span><span class="o">.</span><span class="n">distance</span> <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sectors</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_distance</span>
 
 </div></div>
+<div class="viewcode-block" id="DRS_Config"><a class="viewcode-back" href="../../core.html#formulapy.core.DRS_Config">[docs]</a><span class="k">class</span> <span class="nc">DRS_Config</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">drs_zones</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">drs_zones</span> <span class="o">=</span> <span class="n">drs_zones</span>
+
+</div>
+<div class="viewcode-block" id="DRS_Zone"><a class="viewcode-back" href="../../core.html#formulapy.core.DRS_Zone">[docs]</a><span class="k">class</span> <span class="nc">DRS_Zone</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">detect_km</span><span class="p">,</span> <span class="n">activate_km</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">detect_km</span> <span class="o">=</span> <span class="n">detect_km</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">activate_km</span> <span class="o">=</span> <span class="n">activate_km</span>
+
+</div>
 <div class="viewcode-block" id="Sector"><a class="viewcode-back" href="../../core.html#formulapy.core.Sector">[docs]</a><span class="k">class</span> <span class="nc">Sector</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dist</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">distance</span> <span class="o">=</span> <span class="n">dist</span>
-
-</div>
-<div class="viewcode-block" id="DRS_Config"><a class="viewcode-back" href="../../core.html#formulapy.core.DRS_Config">[docs]</a><span class="k">class</span> <span class="nc">DRS_Config</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">pass</span>
 
 </div>
 <div class="viewcode-block" id="Corner"><a class="viewcode-back" href="../../core.html#formulapy.core.Corner">[docs]</a><span class="k">class</span> <span class="nc">Corner</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -201,8 +230,28 @@
 
 <span class="sd">        :return:</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">pass</span> <span class="c">#ToDo: implement distribution for when this instance of tire reaches degradation states (binomial?)</span></div></div>
-</pre></div>
+        <span class="k">pass</span> <span class="c">#ToDo: implement distribution for when this instance of tire reaches degradation states (binomial?)</span>
+
+</div></div>
+<div class="viewcode-block" id="Event"><a class="viewcode-back" href="../../core.html#formulapy.core.Event">[docs]</a><span class="k">class</span> <span class="nc">Event</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+</div>
+<div class="viewcode-block" id="Rain"><a class="viewcode-back" href="../../core.html#formulapy.core.Rain">[docs]</a><span class="k">class</span> <span class="nc">Rain</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Rain</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+
+</div>
+<div class="viewcode-block" id="Overtake"><a class="viewcode-back" href="../../core.html#formulapy.core.Overtake">[docs]</a><span class="k">class</span> <span class="nc">Overtake</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Overtake</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+
+</div>
+<div class="viewcode-block" id="Wreck"><a class="viewcode-back" href="../../core.html#formulapy.core.Wreck">[docs]</a><span class="k">class</span> <span class="nc">Wreck</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Wreck</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+</pre></div></div>
 
           </div>
           <footer>

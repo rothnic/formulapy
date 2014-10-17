@@ -58,8 +58,26 @@
         
             <ul>
 <li class="toctree-l1"><a class="reference internal" href="core.html">Core Components</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html">Analysis Notebooks</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="models/models.html">Models</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="models/models.html#module-formulapy.models.tracks">Tracks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="models/models.html#seasons">Seasons</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="data_readme.html">Data Processing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="data_readme.html#data-parsing">Data Parsing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data_readme.html#data-tools">Data Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data_readme.html#data-sources">Data Sources</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/Parsing_FIA_PDF.html">Parsing FIA PDF Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/Placeholder_Notebook.html">Embedding IPython Notebook</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="development.html">Development</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="testing_readme.html">Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="readme.html">Documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/readme.html">IPython Notebooks</a></li>
 </ul>
 </li>
 </ul>
@@ -102,8 +120,26 @@
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="core.html">Core Components</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html">Analysis Notebooks</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="models/models.html">Models</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="models/models.html#module-formulapy.models.tracks">Tracks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="models/models.html#seasons">Seasons</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="data_readme.html">Data Processing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="data_readme.html#data-parsing">Data Parsing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data_readme.html#data-tools">Data Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data_readme.html#data-sources">Data Sources</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/Parsing_FIA_PDF.html">Parsing FIA PDF Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/Placeholder_Notebook.html">Embedding IPython Notebook</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="development.html">Development</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="testing_readme.html">Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="readme.html">Documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/readme.html">IPython Notebooks</a></li>
 </ul>
 </li>
 </ul>
@@ -112,6 +148,7 @@
 <div class="section" id="formulapy">
 <h1>FormulaPy<a class="headerlink" href="#formulapy" title="Permalink to this headline">¶</a></h1>
 <p>A Formula 1 simulation in python.</p>
+<p><a class="reference external" href="http://formulapy.readthedocs.org/en/latest/">Full Documentation</a></p>
 <div class="section" id="background">
 <h2>Background<a class="headerlink" href="#background" title="Permalink to this headline">¶</a></h2>
 <p>Developed after first concept introduced by reddit user <a class="reference external" href="http://www.reddit.com/user/whatthefat">whatthefat</a>.
@@ -178,29 +215,8 @@ IPython Notebook should be completely adequate.</p>
 <li>Docs: Sphinx, sphinx_rtd_theme</li>
 <li>Visualization: Seaborn (stats), Bokeh (interactive charts), Matplotlib (standard plots)</li>
 </ul>
+<p>See full <a class="reference internal" href="development.html#development-docs"><em>Development</em></a> documentation for more configuration information</p>
 </div>
-</div>
-<div class="section" id="pytest">
-<h2>Pytest<a class="headerlink" href="#pytest" title="Permalink to this headline">¶</a></h2>
-<p>Pytest can run python unittests and nose tests, and provide a way to quickly create tests from functions. All of the
-tests will be placed in this tests folder and are automatically found by pytest based on having the keyword &#8220;test&#8221; in
-the name of the python file and function. They can be separated out into different files as needed for organization.</p>
-<a class="reference internal image-reference" href="_images/pytest_pycharm_config.png"><img alt="Pytest Pycharm Config" class="align-center" src="_images/pytest_pycharm_config.png" style="width: 819.0px; height: 527.25px;" /></a>
-</div>
-<div class="section" id="sphinx-documentation-generation">
-<h2>Sphinx Documentation Generation<a class="headerlink" href="#sphinx-documentation-generation" title="Permalink to this headline">¶</a></h2>
-<p>Only the source code will be included in the repository. _build, _static, and notebooks/.ipynb_checkpoints are
-excluded with .gitignore.</p>
-<a class="reference internal image-reference" href="_images/sphinx_pycharm_config.png"><img alt="Sphinx Pycharm Config" class="align-center" src="_images/sphinx_pycharm_config.png" style="width: 818.25px; height: 526.5px;" /></a>
-</div>
-<div class="section" id="adding-ipython-notebooks-to-sphinx-docs">
-<h2>Adding IPython Notebooks to Sphinx Docs<a class="headerlink" href="#adding-ipython-notebooks-to-sphinx-docs" title="Permalink to this headline">¶</a></h2>
-<ol class="arabic simple">
-<li>Place IPython notebook in this directory</li>
-<li>Create a RST file with the same name as the notebook (convention, doesn&#8217;t have to be the same)</li>
-<li>Use the &#8221;.. notebook:: thenameofyournotebook.ipynb&#8221; directive to tell Sphinx to execute and insert the notebook</li>
-<li>Reference thenameofyournotebook.rst file from some higher level Sphinx RST file</li>
-</ol>
 </div>
 </div>
 <div class="section" id="indices-and-tables">

@@ -58,8 +58,26 @@
         
             <ul>
 <li class="toctree-l1"><a class="reference internal" href="core.html">Core Components</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html">Analysis Notebooks</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="models/models.html">Models</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="models/models.html#module-formulapy.models.tracks">Tracks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="models/models.html#seasons">Seasons</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="data_readme.html">Data Processing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="data_readme.html#data-parsing">Data Parsing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data_readme.html#data-tools">Data Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data_readme.html#data-sources">Data Sources</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/Parsing_FIA_PDF.html">Parsing FIA PDF Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/Placeholder_Notebook.html">Embedding IPython Notebook</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="development.html">Development</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="testing_readme.html">Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="readme.html">Documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/readme.html">IPython Notebooks</a></li>
 </ul>
 </li>
 </ul>
@@ -98,16 +116,31 @@
 <h1 id="index">Index</h1>
 
 <div class="genindex-jumpbox">
- <a href="#C"><strong>C</strong></a>
+ <a href="#A"><strong>A</strong></a>
+ | <a href="#C"><strong>C</strong></a>
  | <a href="#D"><strong>D</strong></a>
  | <a href="#E"><strong>E</strong></a>
  | <a href="#F"><strong>F</strong></a>
+ | <a href="#G"><strong>G</strong></a>
+ | <a href="#I"><strong>I</strong></a>
+ | <a href="#O"><strong>O</strong></a>
  | <a href="#P"><strong>P</strong></a>
  | <a href="#R"><strong>R</strong></a>
  | <a href="#S"><strong>S</strong></a>
  | <a href="#T"><strong>T</strong></a>
+ | <a href="#W"><strong>W</strong></a>
  
 </div>
+<h2 id="A">A</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="data_readme.html#formulapy.data.fia.parsers.append_time_info">append_time_info() (in module formulapy.data.fia.parsers)</a>
+  </dt>
+
+  </dl></td>
+</tr></table>
+
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
@@ -139,14 +172,18 @@
   <dt><a href="core.html#formulapy.core.TrackLayout.distance">distance (formulapy.core.TrackLayout attribute)</a>
   </dt>
 
-  </dl></td>
-  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="core.html#formulapy.core.Driver">Driver (class in formulapy.core)</a>
   </dt>
 
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="core.html#formulapy.core.DRS_Config">DRS_Config (class in formulapy.core)</a>
+  </dt>
+
+      
+  <dt><a href="core.html#formulapy.core.DRS_Zone">DRS_Zone (class in formulapy.core)</a>
   </dt>
 
   </dl></td>
@@ -160,17 +197,39 @@
   </dt>
 
   </dl></td>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="core.html#formulapy.core.Event">Event (class in formulapy.core)</a>
+  </dt>
+
+  </dl></td>
 </tr></table>
 
 <h2 id="F">F</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
       
+  <dt><a href="data_readme.html#formulapy.data.fia.parsers.format_times">format_times() (in module formulapy.data.fia.parsers)</a>
+  </dt>
+
+      
   <dt><a href="core.html#module-formulapy.core">formulapy.core (module)</a>
+  </dt>
+
+      
+  <dt><a href="data_readme.html#module-formulapy.data.fia.parsers">formulapy.data.fia.parsers (module)</a>
   </dt>
 
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="models/s2014.html#module-formulapy.models.s2014.tracks">formulapy.models.s2014.tracks (module)</a>
+  </dt>
+
+      
+  <dt><a href="models/models.html#module-formulapy.models.tracks">formulapy.models.tracks (module)</a>
+  </dt>
+
       
   <dt><a href="core.html#formulapy.core.PitLane.fromLength">fromLength() (formulapy.core.PitLane class method)</a>
   </dt>
@@ -178,8 +237,44 @@
   </dl></td>
 </tr></table>
 
+<h2 id="G">G</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="data_readme.html#formulapy.data.fia.parsers.get_drivers">get_drivers() (in module formulapy.data.fia.parsers)</a>
+  </dt>
+
+  </dl></td>
+</tr></table>
+
+<h2 id="I">I</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="data_readme.html#formulapy.data.fia.parsers.init_driver">init_driver() (in module formulapy.data.fia.parsers)</a>
+  </dt>
+
+  </dl></td>
+</tr></table>
+
+<h2 id="O">O</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="core.html#formulapy.core.Overtake">Overtake (class in formulapy.core)</a>
+  </dt>
+
+  </dl></td>
+</tr></table>
+
 <h2 id="P">P</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="data_readme.html#formulapy.data.fia.parsers.parse_laptimes">parse_laptimes() (in module formulapy.data.fia.parsers)</a>
+  </dt>
+
+  </dl></td>
   <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="core.html#formulapy.core.PitLane">PitLane (class in formulapy.core)</a>
@@ -196,6 +291,12 @@
   </dt>
 
   </dl></td>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="core.html#formulapy.core.Rain">Rain (class in formulapy.core)</a>
+  </dt>
+
+  </dl></td>
 </tr></table>
 
 <h2 id="S">S</h2>
@@ -205,10 +306,30 @@
   <dt><a href="core.html#formulapy.core.Sector">Sector (class in formulapy.core)</a>
   </dt>
 
+      
+  <dt><a href="core.html#formulapy.core.Race.sim">sim() (formulapy.core.Race method)</a>
+  </dt>
+
+      
+  <dt><a href="models/models.html#formulapy.models.tracks.Spa">Spa (class in formulapy.models.tracks)</a>
+  </dt>
+
+      
+  <dt><a href="models/s2014.html#formulapy.models.s2014.tracks.Spa2014">Spa2014 (class in formulapy.models.s2014.tracks)</a>
+  </dt>
+
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="core.html#formulapy.core.Race.sim">sim() (formulapy.core.Race method)</a>
+  <dt><a href="models/models.html#formulapy.models.tracks.SpaPitLane">SpaPitLane (class in formulapy.models.tracks)</a>
+  </dt>
+
+      
+  <dt><a href="data_readme.html#formulapy.data.fia.parsers.split_joined_times">split_joined_times() (in module formulapy.data.fia.parsers)</a>
+  </dt>
+
+      
+  <dt><a href="data_readme.html#formulapy.data.fia.parsers.split_num_str">split_num_str() (in module formulapy.data.fia.parsers)</a>
   </dt>
 
   </dl></td>
@@ -233,6 +354,16 @@
 
       
   <dt><a href="core.html#formulapy.core.TrackLayout">TrackLayout (class in formulapy.core)</a>
+  </dt>
+
+  </dl></td>
+</tr></table>
+
+<h2 id="W">W</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="core.html#formulapy.core.Wreck">Wreck (class in formulapy.core)</a>
   </dt>
 
   </dl></td>

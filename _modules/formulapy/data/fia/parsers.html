@@ -1,0 +1,425 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>formulapy.data.fia.parsers &mdash; FormulaPy 0.1 documentation</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="top" title="FormulaPy 0.1 documentation" href="../../../../index.html"/>
+        <link rel="up" title="Module code" href="../../../index.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        <a href="../../../../index.html" class="fa fa-home"> FormulaPy</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+        
+            <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../core.html">Core Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../models/models.html">Models</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../models/models.html#module-formulapy.models.tracks">Tracks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../models/models.html#seasons">Seasons</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../data_readme.html">Data Processing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../data_readme.html#data-parsing">Data Parsing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../data_readme.html#data-tools">Data Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../data_readme.html#data-sources">Data Sources</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../examples.html">Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../notebooks/Parsing_FIA_PDF.html">Parsing FIA PDF Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../notebooks/Placeholder_Notebook.html">Embedding IPython Notebook</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../development.html">Development</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../testing_readme.html">Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../readme.html">Documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../notebooks/readme.html">IPython Notebooks</a></li>
+</ul>
+</li>
+</ul>
+
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../../../index.html">FormulaPy</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+      
+    <li>formulapy.data.fia.parsers</li>
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            
+  <h1>Source code for formulapy.data.fia.parsers</h1><div class="highlight"><pre>
+<span class="n">__author__</span> <span class="o">=</span> <span class="s">&#39;nickroth&#39;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">pdftables</span> <span class="kn">import</span> <span class="n">get_tables</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+
+
+<div class="viewcode-block" id="parse_laptimes"><a class="viewcode-back" href="../../../../data_readme.html#formulapy.data.fia.parsers.parse_laptimes">[docs]</a><span class="k">def</span> <span class="nf">parse_laptimes</span><span class="p">(</span><span class="n">filepath</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parses a PDF of qualifying or practice report lap times from the FIA into data that we can further analyze. See</span>
+<span class="sd">    an example at `Japan Qualifying Report &lt;http://www.fia.com/sites/default/files/championship/event_report/documents/2014_15_JPN_F1_Q0_Timing_QualifyingSessionLapTimes_V01.pdf&gt;`_.</span>
+
+<span class="sd">    :param filepath: a string pathname to the pdf on your local computer</span>
+<span class="sd">    :return: - a pandas dataframe with column for number, name, and times</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c"># open the file</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fileobj</span><span class="p">:</span>
+
+        <span class="n">names</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">nums</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">times</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">tables</span> <span class="o">=</span> <span class="n">get_tables</span><span class="p">(</span><span class="n">fileobj</span><span class="p">)</span>
+
+        <span class="c"># loop over each page/table that were parsed out, and append drivers into one list</span>
+        <span class="k">for</span> <span class="n">table</span> <span class="ow">in</span> <span class="n">tables</span><span class="p">:</span>
+            <span class="n">this_drivers</span> <span class="o">=</span> <span class="n">get_drivers</span><span class="p">(</span><span class="n">table</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">driver</span> <span class="ow">in</span> <span class="n">this_drivers</span><span class="p">:</span>
+                <span class="c"># drivers.append(driver)</span>
+
+                <span class="n">h</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">driver</span><span class="p">[</span><span class="s">&#39;times&#39;</span><span class="p">])</span>
+                <span class="n">this_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">driver</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]]</span> <span class="o">*</span> <span class="n">h</span>
+                <span class="n">this_num</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">driver</span><span class="p">[</span><span class="s">&#39;num&#39;</span><span class="p">])]</span> <span class="o">*</span> <span class="n">h</span>
+
+                <span class="n">names</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">this_names</span><span class="p">)</span>
+                <span class="n">nums</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">this_num</span><span class="p">)</span>
+                <span class="n">times</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">driver</span><span class="p">[</span><span class="s">&#39;times&#39;</span><span class="p">])</span>
+
+        <span class="c"># create pandas dataframe</span>
+        <span class="n">nums</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">nums</span><span class="p">)</span>
+        <span class="n">names</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">names</span><span class="p">)</span>
+        <span class="n">times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">times</span><span class="p">)</span>
+        <span class="n">drivers</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s">&#39;driver_no&#39;</span><span class="p">:</span><span class="n">nums</span><span class="p">,</span> <span class="s">&#39;name&#39;</span><span class="p">:</span><span class="n">names</span><span class="p">,</span> <span class="s">&#39;time&#39;</span><span class="p">:</span><span class="n">times</span><span class="p">})</span>
+
+        <span class="k">return</span> <span class="n">drivers</span>
+
+</div>
+<div class="viewcode-block" id="get_drivers"><a class="viewcode-back" href="../../../../data_readme.html#formulapy.data.fia.parsers.get_drivers">[docs]</a><span class="k">def</span> <span class="nf">get_drivers</span><span class="p">(</span><span class="n">table</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Takes an input of a pdftable, corresponding to the data on one page of fia lap timing report from qualifications</span>
+<span class="sd">    or practice. See `Japan Qualifying Report`_ for an example PDF that this function helps parse.</span>
+
+<span class="sd">    :param table: pdftable from calling :py:func:`~formulapy.data.fia.parsers.parse_laptimes`</span>
+<span class="sd">    :return: - list of python dicts, where each dict represents one driver on this page</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">drivers</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">driver1</span><span class="p">,</span> <span class="n">driver2</span><span class="p">,</span> <span class="n">driver3</span> <span class="o">=</span> <span class="p">{},</span> <span class="p">{},</span> <span class="p">{}</span>
+
+    <span class="n">idx</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">new_drivers</span> <span class="o">=</span> <span class="bp">False</span>
+
+    <span class="c"># loop over each row in table</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">table</span><span class="p">):</span>
+
+        <span class="n">this_row</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+
+        <span class="c"># each table is separated by a row with &#39;TIME&#39; in it, which has times below it, based on the index of the</span>
+        <span class="c"># location of &#39;TIME&#39; in the row. the index can change from table to table</span>
+        <span class="n">vals</span> <span class="o">=</span> <span class="n">this_row</span> <span class="o">==</span> <span class="nb">unicode</span><span class="p">(</span><span class="s">&#39;TIME&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">vals</span><span class="p">):</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="n">vals</span>
+
+            <span class="c"># search around where we think the driver row will be</span>
+            <span class="n">driver_row_idx</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="k">for</span> <span class="n">driver_idx</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="n">this_driver_row</span> <span class="o">=</span> <span class="n">table</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="n">driver_idx</span><span class="p">]</span>
+
+                <span class="c"># make sure not row with times in it, or completely empty row, or the row with TIME in it</span>
+                <span class="k">if</span> <span class="p">(</span><span class="nb">sum</span><span class="p">([</span><span class="mi">1</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">this_driver_row</span> <span class="k">if</span> <span class="s">&#39;:&#39;</span> <span class="ow">in</span> <span class="n">x</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">this_driver_row</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mi">0</span>
+                    <span class="ow">and</span> <span class="n">driver_idx</span> <span class="ow">is</span> <span class="ow">not</span> <span class="mi">0</span><span class="p">):</span>
+                    <span class="n">driver_row_idx</span> <span class="o">=</span> <span class="n">driver_idx</span>
+
+            <span class="c"># the row with driver names</span>
+            <span class="n">the_row</span> <span class="o">=</span> <span class="n">table</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="n">driver_row_idx</span><span class="p">]</span>
+
+            <span class="c"># find the empty strings, which separates the driver names</span>
+            <span class="n">empty_strs</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">the_row</span><span class="p">)</span> <span class="k">if</span> <span class="n">x</span> <span class="o">==</span> <span class="s">&#39;&#39;</span><span class="p">]</span>
+            <span class="n">driver_strs</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">empty_strs</span><span class="p">):</span>
+
+                <span class="c"># join the strings between the empty strings, which collects any split names</span>
+                <span class="k">if</span> <span class="n">j</span> <span class="ow">is</span> <span class="ow">not</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">temp_str</span> <span class="o">=</span> <span class="s">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">the_row</span><span class="p">[</span><span class="n">empty_strs</span><span class="p">[</span><span class="n">j</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]:</span><span class="n">val</span><span class="p">])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">temp_str</span> <span class="o">=</span> <span class="s">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">the_row</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">val</span><span class="p">])</span>
+
+                <span class="c"># append each joined string to the list</span>
+                <span class="k">if</span> <span class="n">temp_str</span><span class="p">:</span>
+                    <span class="n">driver_strs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">temp_str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39; &#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">))</span>
+
+            <span class="c"># split the driver info into their number and name</span>
+            <span class="n">driver_strs</span> <span class="o">=</span> <span class="p">[</span><span class="n">split_num_str</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">driver_strs</span><span class="p">]</span>
+
+            <span class="c"># set flag that we have found new drivers in the table</span>
+            <span class="n">new_drivers</span> <span class="o">=</span> <span class="bp">True</span>
+
+        <span class="c"># Only enter this statement after we find the row with &#39;TIME&#39; in it, which is the primary indicator of a new</span>
+        <span class="c"># set of driver information. We hit this the second time through.</span>
+        <span class="k">elif</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">idx</span><span class="p">):</span>
+            <span class="n">the_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+            <span class="n">the_idx</span> <span class="o">=</span> <span class="n">the_idx</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+            <span class="c"># check for flag telling us we hit a row with driver info in it</span>
+            <span class="k">if</span> <span class="n">new_drivers</span><span class="p">:</span>
+
+                <span class="c"># store out the previous drivers, if this isn&#39;t the initial time through</span>
+                <span class="k">if</span> <span class="s">&#39;num&#39;</span> <span class="ow">in</span> <span class="n">driver1</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="n">drivers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">driver1</span><span class="p">)</span>
+                <span class="k">if</span> <span class="s">&#39;num&#39;</span> <span class="ow">in</span> <span class="n">driver2</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="n">drivers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">driver2</span><span class="p">)</span>
+                <span class="k">if</span> <span class="s">&#39;num&#39;</span> <span class="ow">in</span> <span class="n">driver3</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="n">drivers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">driver3</span><span class="p">)</span>
+
+                <span class="c"># reset the drivers flag when we found new driver names</span>
+                <span class="n">new_drivers</span> <span class="o">=</span> <span class="bp">False</span>
+
+                <span class="c"># reset driver dicts and store in initial new info on the new drivers</span>
+                <span class="n">driver1</span> <span class="o">=</span> <span class="n">init_driver</span><span class="p">(</span><span class="n">driver_strs</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+                <span class="n">driver2</span> <span class="o">=</span> <span class="n">init_driver</span><span class="p">(</span><span class="n">driver_strs</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="n">driver3</span> <span class="o">=</span> <span class="n">init_driver</span><span class="p">(</span><span class="n">driver_strs</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+            <span class="c"># store the data into the driver information for each of the 3 drivers we handle at a time</span>
+            <span class="n">append_time_info</span><span class="p">(</span><span class="n">driver1</span><span class="p">,</span> <span class="n">the_idx</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">row</span><span class="p">)</span>
+            <span class="n">append_time_info</span><span class="p">(</span><span class="n">driver2</span><span class="p">,</span> <span class="n">the_idx</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="n">row</span><span class="p">)</span>
+            <span class="n">append_time_info</span><span class="p">(</span><span class="n">driver3</span><span class="p">,</span> <span class="n">the_idx</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="n">row</span><span class="p">)</span>
+
+    <span class="c"># reached end of drivers for this page, only append the columns/drivers with data</span>
+    <span class="k">if</span> <span class="s">&#39;num&#39;</span> <span class="ow">in</span> <span class="n">driver1</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="n">drivers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">driver1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s">&#39;num&#39;</span> <span class="ow">in</span> <span class="n">driver2</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="n">drivers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">driver2</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s">&#39;num&#39;</span> <span class="ow">in</span> <span class="n">driver3</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="n">drivers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">driver3</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">drivers</span>
+
+</div>
+<div class="viewcode-block" id="init_driver"><a class="viewcode-back" href="../../../../data_readme.html#formulapy.data.fia.parsers.init_driver">[docs]</a><span class="k">def</span> <span class="nf">init_driver</span><span class="p">(</span><span class="n">driver_strings</span><span class="p">,</span> <span class="n">driver_idx</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Initializes the driver dict and stores values from the driver_strings into it, if they exist</span>
+
+<span class="sd">    :param driver_strings: tuple with driver number and name within it</span>
+<span class="sd">    :param driver_idx: 0, 1, or 2, representing the index of the 3 drivers processed at a time</span>
+<span class="sd">    :return: initialized driver dict, where empty if there was no info for the given idx</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">driver</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">driver_strings</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">driver_idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">num</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="n">driver_strings</span><span class="p">[</span><span class="n">driver_idx</span><span class="p">]</span>
+        <span class="n">driver</span><span class="p">[</span><span class="s">&#39;num&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">num</span><span class="p">)</span>
+        <span class="n">driver</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">driver</span><span class="p">[</span><span class="s">&#39;times&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">return</span> <span class="n">driver</span>
+
+</div>
+<div class="viewcode-block" id="append_time_info"><a class="viewcode-back" href="../../../../data_readme.html#formulapy.data.fia.parsers.append_time_info">[docs]</a><span class="k">def</span> <span class="nf">append_time_info</span><span class="p">(</span><span class="n">driver</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">row</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Factors out some common logic for getting the time information for the driver based on their relative position in</span>
+<span class="sd">    the row.</span>
+
+<span class="sd">    :param driver: dict with driver info</span>
+<span class="sd">    :param idx: the indices of the columns where times should be</span>
+<span class="sd">    :param pos: the last column that this driver shouldn&#39;t have values past</span>
+<span class="sd">    :param row: the current row being processed</span>
+<span class="sd">    :return: None, driver dicts are modified directly, so no return required</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">idx</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">pos</span><span class="p">:</span>
+        <span class="n">d_list</span> <span class="o">=</span> <span class="n">driver</span><span class="p">[</span><span class="s">&#39;times&#39;</span><span class="p">]</span>
+
+        <span class="c"># first column for this driver</span>
+        <span class="k">if</span> <span class="s">&#39;:&#39;</span> <span class="ow">in</span> <span class="n">row</span><span class="p">[</span><span class="n">idx</span><span class="p">[</span><span class="n">pos</span> <span class="o">-</span> <span class="mi">2</span><span class="p">]]:</span>
+            <span class="n">this_time</span> <span class="o">=</span> <span class="n">format_times</span><span class="p">(</span><span class="n">split_joined_times</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="n">idx</span><span class="p">[</span><span class="n">pos</span> <span class="o">-</span> <span class="mi">2</span><span class="p">]]))</span>
+            <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">this_time</span><span class="p">:</span>
+                <span class="n">d_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+
+        <span class="c"># second column for this driver</span>
+        <span class="k">if</span> <span class="s">&#39;:&#39;</span> <span class="ow">in</span> <span class="n">row</span><span class="p">[</span><span class="n">idx</span><span class="p">[</span><span class="n">pos</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]]:</span>
+            <span class="n">this_time</span> <span class="o">=</span> <span class="n">format_times</span><span class="p">(</span><span class="n">split_joined_times</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="n">idx</span><span class="p">[</span><span class="n">pos</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]]))</span>
+            <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">this_time</span><span class="p">:</span>
+                <span class="n">d_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="split_joined_times"><a class="viewcode-back" href="../../../../data_readme.html#formulapy.data.fia.parsers.split_joined_times">[docs]</a><span class="k">def</span> <span class="nf">split_joined_times</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Splits times that can sometimes be joined together based on how the PDF is formatted. If it doesn&#39;t detect joined</span>
+<span class="sd">    times, then it will just return the single time in a list.</span>
+
+<span class="sd">    :param t: a string with likely times in it</span>
+<span class="sd">    :return: a list containing individual times</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">split_times</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;.&#39;</span><span class="p">)</span>
+
+    <span class="c"># a single time will split into two pieces</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">split_times</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">mixed</span> <span class="o">=</span> <span class="n">split_times</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">time1</span> <span class="o">=</span> <span class="n">split_times</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s">&#39;.&#39;</span> <span class="o">+</span> <span class="n">mixed</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span>
+        <span class="n">time2</span> <span class="o">=</span> <span class="n">mixed</span><span class="p">[</span><span class="mi">3</span><span class="p">:]</span> <span class="o">+</span> <span class="s">&#39;.&#39;</span> <span class="o">+</span> <span class="n">split_times</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">times</span> <span class="o">=</span> <span class="p">[</span><span class="n">time1</span><span class="p">,</span> <span class="n">time2</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">times</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">times</span>
+
+</div>
+<div class="viewcode-block" id="format_times"><a class="viewcode-back" href="../../../../data_readme.html#formulapy.data.fia.parsers.format_times">[docs]</a><span class="k">def</span> <span class="nf">format_times</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Converts a list of time strings into a list of floats, representing the number of seconds for the given lap.</span>
+<span class="sd">    Assumes the values are always minutes:seconds.milliseconds.</span>
+
+<span class="sd">    :param t: list of time strings</span>
+<span class="sd">    :return: list of times as floats</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">new_t</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">time</span> <span class="ow">in</span> <span class="n">t</span><span class="p">:</span>
+        <span class="n">time_parts</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;:&#39;</span><span class="p">)</span>
+        <span class="n">new_t</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">time_parts</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">+</span> <span class="nb">float</span><span class="p">(</span><span class="n">time_parts</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+
+    <span class="k">return</span> <span class="n">new_t</span>
+
+</div>
+<div class="viewcode-block" id="split_num_str"><a class="viewcode-back" href="../../../../data_readme.html#formulapy.data.fia.parsers.split_num_str">[docs]</a><span class="k">def</span> <span class="nf">split_num_str</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="n">tail</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s">&#39;0123456789&#39;</span><span class="p">)</span>
+    <span class="n">head</span> <span class="o">=</span> <span class="n">s</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">tail</span><span class="p">)]</span>
+    <span class="k">return</span> <span class="n">head</span><span class="p">,</span> <span class="n">tail</span>
+
+</div>
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">filepath</span> <span class="o">=</span> <span class="s">&#39;../../../data/fia_qualifying.pdf&#39;</span>
+    <span class="n">drivers</span> <span class="o">=</span> <span class="n">parse_laptimes</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+    <span class="k">print</span> <span class="n">drivers</span>
+    <span class="k">print</span> <span class="n">drivers</span><span class="o">.</span><span class="n">dtypes</span>
+</pre></div>
+
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2014, Nick Roth.
+    </p>
+  </div>
+
+  <a href="https://github.com/snide/sphinx_rtd_theme">Sphinx theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../../',
+            VERSION:'0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+      <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
