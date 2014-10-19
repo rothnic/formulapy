@@ -59,3 +59,4 @@ target/
 
 # Data
 data/*.pdf
+data/*.sql
