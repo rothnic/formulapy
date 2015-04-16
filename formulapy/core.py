@@ -65,7 +65,10 @@ class PitLane(object):
 
 
 class Race(object):
-    def __init__(self, drivers, track, temp, rain=False):
+    def __init__(self, track, date=None, drivers=None, temp=None, rain=False):
+        self.track = track
+        self.date = date
+        self.drivers = drivers
         self.temp = temp #ToDo: should affect tires
         self.rain = rain #ToDo: rain should affect prob wreck, safety car, car speeds
 
