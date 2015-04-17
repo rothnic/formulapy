@@ -8,11 +8,15 @@ from formulapy.core import Race
 ergast_client = JSONClient(root_uri='http://ergast.com/api/')
 
 
+BASE = r'^f1/'
+JSON = '.json$'
+
+
 class ErgastSeason(Resource):
     """Configures the Ergast API for retrieving Seasons."""
     class Meta:
-        list = r'^f1/.json$'
-        item = r'^f1/(?P<year>).json$'
+        list = BASE + JSON
+        item = BASE + '(?P<year>)' + JSON
 
 
 def strip_header(payload):
