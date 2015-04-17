@@ -1,15 +1,79 @@
 __author__ = 'nickroth'
 
-
+import slumber
 from restorm.clients.jsonclient import JSONClient
 from restorm.resource import Resource
 from formulapy.core import Race
 
-ergast_client = JSONClient(root_uri='http://ergast.com/api/')
-
+ERGAST_URL = 'http://ergast.com/api/'
+ergast_client = JSONClient(root_uri=ERGAST_URL)
 
 BASE = r'^f1/'
 JSON = '.json$'
+
+
+class ErgastApi(object):
+
+    base_url = ERGAST_URL
+
+    def __init__(self, series):
+        assert series == 'f1' or series == 'fr'
+        self.series = series
+        self.api = slumber.API(self.base_url, append_slash=False)
+
+    def season(self, year='current', circuitId=None, driverId=None, constructorId=None,
+               grid_pos=None, result_pos=None, fastest_rank=None, statusId=None):
+
+        options = {'circuits': circuitId,
+                   'drivers': driverId,
+                   'constructors': constructorId,
+                   'grid': grid_pos,
+                   'results': result_pos,
+                   'fastest': fastest_rank,
+                   'status': statusId}
+
+        query = self._get_base_query(year)
+        query = self._add_query_options(query, options)
+        response = self._execute_query(query)
+        return self._parse_response(response)
+
+    @staticmethod
+    def _parse_response(response):
+        x = response
+
+    def _get_base_query(self, year=None):
+        """Returns the base query, which can optionally include a year."""
+        if year is None:
+            return getattr(self.api, self.series)
+        else:
+            return getattr(self.api, self.series)(year)
+
+    @staticmethod
+    def _add_query_options(query, options):
+        """Adds key value query options, if the provided value is not Null."""
+        for k, v in options.iteritems():
+            if v is not None:
+                query = getattr(query, k)(v)
+        return query
+
+    def _execute_query(self, query, format='json', validate=None):
+        """Implements common query execution functionality."""
+        if validate is not None:
+            val = validate(query.url())
+        else:
+            val = self._validate(query.url())
+
+        if val:
+            query = getattr(query, '.' + format)
+            return query.get()
+        else:
+            raise ValueError
+
+    def _validate(self, url):
+        return True
+
+
+
 
 
 class ErgastSeason(Resource):
@@ -48,7 +112,10 @@ def get_races(year):
 
 
 if __name__ == '__main__':
-    races = get_races(2012)
+    # races = get_races(2012)
+    #
+    # for race in races:
+    #     print('Circuit: %s, Date: %s' % (race.track, race.date))
 
-    for race in races:
-        print('Circuit: %s, Date: %s' % (race.track, race.date))
+    erg = ErgastApi(series='f1')
+    ssn = erg.season(2012)
