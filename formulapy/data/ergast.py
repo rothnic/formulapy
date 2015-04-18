@@ -1,59 +1,35 @@
 __author__ = 'nickroth'
 
 import slumber
-from restorm.clients.jsonclient import JSONClient
-from restorm.resource import Resource
-from formulapy.core import Race
 import json
 import datetime
 import pandas as pd
 
+from atom.api import Atom, Unicode,Typed, Coerced, List
+
 ERGAST_URL = 'http://ergast.com/api/'
-ergast_client = JSONClient(root_uri=ERGAST_URL)
-
-BASE = r'^f1/'
-JSON = '.json$'
 
 
-class ErgastParser(object):
+class Location(Atom):
 
-    def __init__(self, kwargs):
-        for k, v in kwargs.iteritems():
-            print k
+    country = Unicode()
+    lat = Coerced(float)
+    long = Coerced(float)
+    locality = Unicode()
 
-        self.set(**kwargs)
 
+class Circuit(Atom):
 
-class Location(object):
-
-    def __init__(self, country, lat, long, locality):
-        self.country = country
-        self.lat = float(lat)
-        self.long = float(long)
-        self.locality = locality
+    circuitId = Unicode()
+    circuitName = Unicode()
+    url = Unicode()
+    location = Typed(Location)
 
     @classmethod
     def from_dict(cls, kwargs):
-        country = kwargs.pop('country')
-        lat = kwargs.pop('lat')
-        long = kwargs.pop('long')
-        locality = kwargs.pop('locality')
-        return cls(country, lat, long, locality)
-
-
-class Circuit(object):
-    def __init__(self, circuitId, circuitName, url, location):
-        self.circuitId = circuitId
-        self.circuitName = circuitName
-        self.url = url
-        self.location = Location.from_dict(location)
-
-    @classmethod
-    def from_dict(cls, kwargs):
-        circuitId = kwargs.pop('circuitId')
-        circuitName = kwargs.pop('circuitName')
-        url = kwargs.pop('url')
-        return cls(circuitId, circuitName, url, kwargs['Location'])
+        location = kwargs.pop('Location')
+        kwargs['location'] = Location(**location)
+        return cls(**kwargs)
 
     @property
     def country(self):
@@ -76,26 +52,28 @@ class Circuit(object):
         return {k: getattr(self, k) for k in dict_props}
 
 
-class Race(object):
-    def __init__(self, date, raceName, round, season, race_time, url, circuit):
-        self.date = datetime.datetime.strptime(date + ' ' + race_time[:-1],
-                                               '%Y-%m-%d %H:%M:%S')
-        self.name = raceName
-        self.round = int(round)
-        self.season = int(season)
-        self.time = self.date.time()
-        self.url = url
-        self.circuit = Circuit.from_dict(circuit)
+class Race(Atom):
+
+    date = Typed(datetime.datetime)
+    name = Unicode()
+    round = Coerced(int)
+    season = Coerced(int)
+    url = Unicode()
+    circuit = Typed(Circuit)
 
     @classmethod
     def from_dict(cls, kwargs):
         date = kwargs.pop('date')
-        raceName = kwargs.pop('raceName')
-        round = kwargs.pop('round')
-        season = kwargs.pop('season')
         race_time = kwargs.pop('time')
-        url = kwargs.pop('url')
-        return cls(date, raceName, round, season, race_time, url, kwargs['Circuit'])
+        kwargs['date'] = datetime.datetime.strptime(date + ' ' + race_time[:-1],
+                                   '%Y-%m-%d %H:%M:%S')
+        kwargs['circuit'] = Circuit.from_dict(kwargs.pop('Circuit'))
+        kwargs['name'] = kwargs.pop('raceName')
+        return cls(**kwargs)
+
+    @property
+    def time(self):
+        return self.date.time()
 
     def to_row(self):
         dict_props = ['date', 'name', 'round', 'season', 'time', 'url']
@@ -103,10 +81,14 @@ class Race(object):
         return dict({k: getattr(self, k) for k in dict_props}.items() + cir.items())
 
 
-class Season(object):
-    def __init__(self, season, races):
-        self.season = int(season)
-        self.races = [Race.from_dict(race) for race in races]
+class Season(Atom):
+    season = Coerced(int)
+    races = List(Typed(Race))
+
+    @classmethod
+    def from_dict(cls, kwargs):
+        kwargs['races'] = [Race.from_dict(race) for race in kwargs['races']]
+        return cls(**kwargs)
 
     def to_rows(self):
         rows = []
@@ -160,7 +142,7 @@ class ErgastApi(object):
 
     @staticmethod
     def _parse_data(data):
-        return Season(data['season'], data['Races'])
+        return Season.from_dict({'season': data['season'], 'races': data['Races']})
 
     def _get_base_query(self, year=None):
         """Returns the base query, which can optionally include a year."""
