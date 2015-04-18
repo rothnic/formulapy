@@ -1,5 +1,17 @@
 __author__ = 'nickroth'
 
+from atom.api import Atom, Unicode,Typed, Coerced, List, Bool
+import datetime
+import pandas as pd
+
+
+class Location(Atom):
+
+    country = Unicode()
+    lat = Coerced(float)
+    long = Coerced(float)
+    locality = Unicode()
+
 
 class Driver(object):
     def __init__(self, name, num, car, seq_wins=0):
@@ -7,6 +19,40 @@ class Driver(object):
         self.number = num
         self.car = car
         self.seq_wins = seq_wins
+
+
+class Circuit(Atom):
+
+    circuitId = Unicode()
+    circuitName = Unicode()
+    url = Unicode()
+    location = Typed(Location)
+
+    @classmethod
+    def from_dict(cls, kwargs):
+        location = kwargs.pop('Location')
+        kwargs['location'] = Location(**location)
+        return cls(**kwargs)
+
+    @property
+    def country(self):
+        return self.location.country
+
+    @property
+    def lat(self):
+        return self.location.lat
+
+    @property
+    def long(self):
+        return self.location.long
+
+    @property
+    def city(self):
+        return self.location.locality
+
+    def to_row(self):
+        dict_props = ['circuitId', 'circuitName', 'city', 'country', 'lat', 'long']
+        return {k: getattr(self, k) for k in dict_props}
 
 
 class Track(object):
@@ -64,16 +110,63 @@ class PitLane(object):
         return cls #ToDo: allow creation of pitlane from length, speed limit, etc.
 
 
-class Race(object):
-    def __init__(self, track, date=None, drivers=None, temp=None, rain=False):
-        self.track = track
-        self.date = date
-        self.drivers = drivers
-        self.temp = temp #ToDo: should affect tires
-        self.rain = rain #ToDo: rain should affect prob wreck, safety car, car speeds
+class Race(Atom):
 
-    def sim(self):
-        pass #ToDo: implement initial sim framework
+    date = Typed(datetime.datetime)
+    name = Unicode()
+    round = Coerced(int)
+    season = Coerced(int)
+    url = Unicode()
+    temp = Coerced(float)              #ToDo: should affect tires
+    rain = Bool(default=False)         #ToDo: rain should affect prob wreck, safety car, car speeds
+
+    circuit = Typed(Circuit)
+    drivers = List(Typed(Driver))
+
+    @classmethod
+    def from_dict(cls, kwargs):
+        date = kwargs.pop('date')
+        race_time = kwargs.pop('time')
+        kwargs['date'] = datetime.datetime.strptime(date + ' ' + race_time[:-1],
+                                   '%Y-%m-%d %H:%M:%S')
+        kwargs['circuit'] = Circuit.from_dict(kwargs.pop('Circuit'))
+        kwargs['name'] = kwargs.pop('raceName')
+        return cls(**kwargs)
+
+    @property
+    def time(self):
+        return self.date.time()
+
+    def to_row(self):
+        dict_props = ['date', 'name', 'round', 'season', 'time']
+        cir = self.circuit.to_row()
+        return dict({k: getattr(self, k) for k in dict_props}.items() + cir.items())
+
+
+class Season(Atom):
+    season = Coerced(int)
+    races = List(Typed(Race))
+
+    @classmethod
+    def from_dict(cls, kwargs):
+        if 'races' in kwargs.keys():
+            kwargs['races'] = [Race.from_dict(race) for race in kwargs['races']]
+        return cls(**kwargs)
+
+    def to_rows(self):
+
+        if self.races:
+            rows = []
+            for race in self.races:
+                race_row = race.to_row()
+                race_row['season'] = self.season
+                rows.append(race_row)
+        else:
+            rows = {'season': self.season}
+        return rows
+
+    def to_df(self):
+        return pd.DataFrame(self.to_rows())
 
 
 class Car(object):
