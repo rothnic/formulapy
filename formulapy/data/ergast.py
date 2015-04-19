@@ -7,6 +7,7 @@ import slumber
 import json
 
 ERGAST_URL = 'http://ergast.com/api/'
+ALL_DATA = {'?limit=1000': '?limit=1000'}
 
 class ErgastApi(API):
 
@@ -25,8 +26,17 @@ class ErgastApi(API):
 
 
     @property
+    def drivers(self):
+        options = dict({'drivers': 'drivers'}.items() + ALL_DATA.items())
+        return self.season(year=None, extra_options=options)
+
+    def driver(self, driverId=None, year=None, circuitId=None, constructorId=None,
+                grid_pos=None, result_pos=None, fastest_rank=None, statusId=None):
+        pass
+
+    @property
     def seasons(self):
-        options = {'?limit=1000': '?limit=1000'}
+        options = dict({'seasons': 'seasons'}.items() + ALL_DATA.items())
         return self.season(year=None, extra_options=options)
 
     def season(self, year=None, circuitId=None, driverId=None, constructorId=None,
@@ -40,9 +50,6 @@ class ErgastApi(API):
                    'results': result_pos,
                    'fastest': fastest_rank,
                    'status': statusId}
-
-        if year is None:
-            options['seasons'] = 'seasons'
 
         if extra_options is not None:
             options = dict(options.items() + extra_options.items())
@@ -133,7 +140,5 @@ class FormulaE(Series):
 if __name__ == '__main__':
 
     erg = ErgastApi(series='f1')
-    ssn = erg.season(2012)
-    print(ssn.to_df())
-
-    print(pd.DataFrame([season.to_rows() for season in erg.seasons]))
+    ssn = erg.drivers
+    print(ssn)

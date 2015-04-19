@@ -5,9 +5,30 @@ import datetime
 import pandas as pd
 from lazy.lazy import lazy
 from formulapy.data.core import API
+from formulapy.utils import variablize
+
+
+class DataGroup(object):
+    """Enables dot notation into named members of a list."""
+
+    def __init__(self, data_list):
+        for data in data_list:
+            setattr(self, str(data), data)
+        self.data = data_list
+
+    def __getitem__(self, i):
+        return self.data[i]
+
+    def __repr__(self):
+        return str([str(data) for data in self.data])
+
+    def __len__(self):
+        return len(self.data)
 
 
 class ApiRegistry(object):
+    """Global registry for API calls, so each nested object doesn't need reference."""
+
     def __init__(self):
         self._api = None
 
@@ -20,15 +41,21 @@ class ApiRegistry(object):
             self._api = api
 
 
+# Create the global registry
 registry = ApiRegistry()
 
 
 class FormulaModel(Atom):
+    """Base class to provide reference to the registered api."""
+
     api = Property()
     _api = Typed(API)
 
     def _get_api(self):
-        return registry._api
+        if registry.api is not None:
+            return registry.api
+        else:
+            raise EnvironmentError('API has not been registered.')
 
     def _set_api(self, api):
         self._api = api
@@ -41,7 +68,7 @@ class Location(Atom):
     locality = Unicode()
 
 
-class Driver(object):
+class Driver(FormulaModel):
     def __init__(self, name, num, car, seq_wins=0):
         self.name = name
         self.number = num
@@ -170,6 +197,13 @@ class Race(Atom):
         cir = self.circuit.to_row()
         return dict({k: getattr(self, k) for k in dict_props}.items() + cir.items())
 
+    def __repr__(self):
+        return ('%s-%s: %s') % (self.season, self.round, self.name)
+
+    def __str__(self):
+        name = variablize(self.name)
+        return name + '_' + str(self.round)
+
 
 class Season(FormulaModel):
     season = Coerced(int)
@@ -204,6 +238,9 @@ class Season(FormulaModel):
 
     def to_df(self):
         return pd.DataFrame(self.to_rows())
+
+    def __str__(self):
+        return 's' + str(self.season)
 
 
 class Car(object):
@@ -277,8 +314,12 @@ class Series(object):
         registry.register(api)
 
     @lazy
-    def seasons(self):
+    def _seasons(self):
         return self._api.seasons
+
+    @property
+    def seasons(self):
+        return DataGroup(self._seasons)
 
     def season(self, year='current'):
         if year == 'current':
