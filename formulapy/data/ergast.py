@@ -1,14 +1,14 @@
 __author__ = 'nickroth'
 
 from formulapy.core import Season, Series
+from formulapy.data.core import API
 import pandas as pd
 import slumber
 import json
 
 ERGAST_URL = 'http://ergast.com/api/'
 
-
-class ErgastApi(object):
+class ErgastApi(API):
 
     base_url = ERGAST_URL
 
@@ -16,6 +16,13 @@ class ErgastApi(object):
         assert series == 'f1' or series == 'fe'
         self.series = series
         self.api = slumber.API(self.base_url, append_slash=False)
+
+
+    def races(self, year=None):
+        if year is not None:
+            season = self.season(year=year)
+            return season.races
+
 
     @property
     def seasons(self):

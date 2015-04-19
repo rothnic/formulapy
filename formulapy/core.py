@@ -1,13 +1,40 @@
 __author__ = 'nickroth'
 
-from atom.api import Atom, Unicode,Typed, Coerced, List, Bool
+from atom.api import Atom, Unicode, Typed, Coerced, List, Bool, Property, Callable
 import datetime
 import pandas as pd
 from lazy.lazy import lazy
+from formulapy.data.core import API
+
+
+class ApiRegistry(object):
+    def __init__(self):
+        self._api = None
+
+    @property
+    def api(self):
+        return self._api
+
+    def register(self, api):
+        if self._api is None:
+            self._api = api
+
+
+registry = ApiRegistry()
+
+
+class FormulaModel(Atom):
+    api = Property()
+    _api = Typed(API)
+
+    def _get_api(self):
+        return registry._api
+
+    def _set_api(self, api):
+        self._api = api
 
 
 class Location(Atom):
-
     country = Unicode()
     lat = Coerced(float)
     long = Coerced(float)
@@ -144,14 +171,23 @@ class Race(Atom):
         return dict({k: getattr(self, k) for k in dict_props}.items() + cir.items())
 
 
-class Season(Atom):
+class Season(FormulaModel):
     season = Coerced(int)
-    races = List(Typed(Race))
+    races = Property()
+    _races = List(Typed(Race))
+
+    def _get_races(self):
+        if not self._races:
+            self.races = self.api.races(year=self.season)
+        return self._races
+
+    def _set_races(self, races):
+        self._races = races
 
     @classmethod
     def from_dict(cls, kwargs):
         if 'races' in kwargs.keys():
-            kwargs['races'] = [Race.from_dict(race) for race in kwargs['races']]
+            kwargs['races'] = [Race.from_dict(race) for race in kwargs.pop('races')]
         return cls(**kwargs)
 
     def to_rows(self):
@@ -234,8 +270,11 @@ class Wreck(Event):
 
 
 class Series(object):
+    """The highest level component for accessing data for a racing series."""
+
     def __init__(self, api):
         self._api = api
+        registry.register(api)
 
     @lazy
     def seasons(self):
