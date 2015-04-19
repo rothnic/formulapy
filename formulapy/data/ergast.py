@@ -1,6 +1,6 @@
 __author__ = 'nickroth'
 
-from formulapy.core import Season
+from formulapy.core import Season, Series
 import pandas as pd
 import slumber
 import json
@@ -13,16 +13,18 @@ class ErgastApi(object):
     base_url = ERGAST_URL
 
     def __init__(self, series):
-        assert series == 'f1' or series == 'fr'
+        assert series == 'f1' or series == 'fe'
         self.series = series
         self.api = slumber.API(self.base_url, append_slash=False)
 
     @property
     def seasons(self):
-        return self.season(year=None)
+        options = {'?limit=1000': '?limit=1000'}
+        return self.season(year=None, extra_options=options)
 
     def season(self, year=None, circuitId=None, driverId=None, constructorId=None,
-               grid_pos=None, result_pos=None, fastest_rank=None, statusId=None):
+               grid_pos=None, result_pos=None, fastest_rank=None, statusId=None,
+               extra_options=None):
 
         options = {'circuits': circuitId,
                    'drivers': driverId,
@@ -34,6 +36,9 @@ class ErgastApi(object):
 
         if year is None:
             options['seasons'] = 'seasons'
+
+        if extra_options is not None:
+            options = dict(options.items() + extra_options.items())
 
         query = self._get_base_query(year)
         query = self._add_query_options(query, options)
@@ -105,6 +110,17 @@ class ErgastApi(object):
 
     def _validate(self, url):
         return True
+
+
+class Formula1(Series):
+    def __init__(self):
+        super(Formula1, self).__init__(api=ErgastApi(series='f1'))
+
+
+class FormulaE(Series):
+    def __init__(self):
+        super(FormulaE, self).__init__(api=ErgastApi(series='fe'))
+
 
 
 if __name__ == '__main__':

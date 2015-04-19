@@ -3,6 +3,7 @@ __author__ = 'nickroth'
 from atom.api import Atom, Unicode,Typed, Coerced, List, Bool
 import datetime
 import pandas as pd
+from lazy.lazy import lazy
 
 
 class Location(Atom):
@@ -230,5 +231,22 @@ class Overtake(Event):
 class Wreck(Event):
     def __init__(self):
         super(Wreck, self).__init__()
+
+
+class Series(object):
+    def __init__(self, api):
+        self._api = api
+
+    @lazy
+    def seasons(self):
+        return self._api.seasons
+
+    def season(self, year='current'):
+        if year == 'current':
+            return self.seasons[-1]
+        else:
+            for season in self.seasons:
+                if season.season == year:
+                    return season
 
 
