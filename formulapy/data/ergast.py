@@ -37,14 +37,9 @@ class ErgastApi(API):
         return self.query(year=None, query_type='seasons')
 
     def get_extra_options(self, query_type):
-        if query_type == 'drivers':
-            query_type_dict = {'drivers': 'drivers'}
-        elif query_type == 'seasons':
-            query_type_dict = {'seasons': 'seasons'}
-        else:
-            return None
-
-        return self.combine_dicts(query_type_dict, ALL_DATA)
+        if query_type is not None:
+            query_type_dict = {query_type: query_type}
+            return self.combine_dicts(query_type_dict, ALL_DATA)
 
     @staticmethod
     def combine_dicts(a, b):
