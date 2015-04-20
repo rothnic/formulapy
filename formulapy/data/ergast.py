@@ -4,10 +4,43 @@ from formulapy.core import Season, Series, Driver
 from formulapy.data.core import API
 import slumber
 import json
+from copy import copy
 
 # constants
 ERGAST_URL = 'http://ergast.com/api/'
 ALL_DATA = {'?limit=1000': '?limit=1000'}
+
+
+def merge_data(dict1, dict2):
+    identical = True
+    for k, v in dict1.iteritems():
+        if isinstance(dict1[k], list):
+            if len(dict1[k]) == len(dict2[k]):
+                [merge_data(list1_item, list2_item) for list1_item, list2_item in
+                    zip(dict1[k], dict2[k])]
+
+            # must have identifier to tell us which to merge the first and last items
+            else:
+                dict1_list = dict1[k]
+                dict2_list = dict2[k]
+
+                # reached a list of pure dicts, each containing new information
+                if all([isinstance(field, unicode) for field in dict1_list[0].values()]):
+                    dict1_list.extend(dict2_list)
+
+                # merge the last and first items in the list
+                else:
+                    merge_data(dict1_list[-1], dict2_list[0])
+
+                    # the rest of dict2's list should be new data
+                    dict1_list.extend(dict2_list[1:])
+
+        elif isinstance(dict1[k], dict) and isinstance(dict2[k], dict):
+            merge_data(dict1[k], dict2[k])
+        else:
+            if dict1[k] != dict2[k]:
+                identical = False
+                raise ValueError
 
 
 class ErgastApi(API):
@@ -47,7 +80,7 @@ class ErgastApi(API):
 
     def query(self, year=None, circuit_id=None, driver_id=None, constructor_id=None,
               grid_pos=None, result_pos=None, fastest_rank=None, status_id=None,
-              query_type=None):
+              race_num=None, query_type=None):
 
         options = {'circuits': circuit_id,
                    'drivers': driver_id,
@@ -57,13 +90,21 @@ class ErgastApi(API):
                    'fastest': fastest_rank,
                    'status': status_id}
 
-        if query_type is not None:
-            options = self.get_extra_options(query_type=query_type)
-
+        # every query has some base structure with or without year
         query = self._get_base_query(year)
+
+        # must handle race number as special case, since there is no arg name
+        if race_num is not None:
+            options[str(race_num)] = str(race_num)
+
+        # order matters for constructing nested query
         query = self._add_query_options(query, options)
-        response = self._execute_query(query)
-        data, query_data = self._parse_header(response)
+
+        if query_type is not None:
+            extra_options = self.get_extra_options(query_type=query_type)
+            query = self._add_query_options(query, extra_options)
+
+        data, query_data = self._execute_query(query)
         return self._parse_data(data)
 
     @staticmethod
@@ -128,7 +169,28 @@ class ErgastApi(API):
 
         if val:
             query = getattr(query, '.' + format)
-            return query.get()
+            response = query.get()
+
+            # automatically separate data and the header query metadata
+            data, query_data = self._parse_header(response)
+            num_left = int(query_data['total']) - int(query_data['limit'])
+            offset = 1000
+            while num_left > 0:
+                query_string = query.url()
+                base_query, _ = query_string.split('?')
+                offset_string = '?limit=1000&offset=%s' % (offset)
+                query._store['base_url'] = base_query + offset_string
+
+                response = query.get()
+                next_data, _ = self._parse_header(response)
+
+                merge_data(data, next_data)
+
+                num_left -= 1000
+                offset += 1000
+
+            return data, query_data
+
         else:
             raise ValueError
 
@@ -151,4 +213,5 @@ class FormulaE(Series):
 if __name__ == '__main__':
 
     f1 = Formula1()
-    f1
+    laps = f1.seasons.s2015.races.BahrainGrandPrix_4.laps
+    laps

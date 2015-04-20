@@ -16,11 +16,25 @@ class DataGroup(object):
             setattr(self, str(data), data)
         self.data = data_list
 
-    def __getitem__(self, i):
-        return self.data[i]
+    def __getitem__(self, query):
+        if isinstance(query, int):
+            return self.data[query]
+        elif isinstance(query, dict):
+            filtered_data = []
+            for data_item in self.data:
+                if all([getattr(data_item, k) == v for k, v in query.iteritems()]):
+                    filtered_data.append(data_item)
+            return filtered_data
 
     def __repr__(self):
         return str([str(data) for data in self.data])
+
+    def to_df(self):
+        all_rows = []
+        for data_item in self.data:
+            rows = data_item.to_row()
+            all_rows.extend(rows)
+        return pd.DataFrame(all_rows)
 
     def __len__(self):
         return len(self.data)
@@ -196,6 +210,72 @@ class PitLane(object):
         return cls #ToDo: allow creation of pitlane from length, speed limit, etc.
 
 
+class LapTiming(FormulaModel):
+    driverId = Unicode()
+    position = Coerced(int)
+    time = Typed(datetime.timedelta)
+
+    @staticmethod
+    def parse_time(time_string):
+        """Parses a lap timing, assumed to be minutes:seconds.ms"""
+        assert isinstance(time_string, unicode)
+        time_string = str(time_string)
+
+        if ':' in time_string:
+            minutes, seconds = time_string.split(':')
+        else:
+            minutes = 0
+            seconds = time_string
+
+        if '.' in seconds:
+            seconds, ms = seconds.split('.')
+        else:
+            ms = 0
+
+        minutes, seconds, ms = (int(t) for t in [minutes, seconds, ms])
+        return datetime.timedelta(minutes=minutes, seconds=seconds,
+                                  milliseconds=ms)
+
+    @classmethod
+    def from_dict(cls, kwargs):
+        kwargs['time'] = cls.parse_time(kwargs.pop('time'))
+        return cls(**kwargs)
+
+    def to_row(self):
+        dict_props = ['driverId', 'position', 'time']
+        row = {k: getattr(self, k) for k in dict_props}
+        row['seconds'] = row['time'].total_seconds()
+        return row
+
+    def __str__(self):
+        return str(self.driverId)
+
+    def __repr__(self):
+        return '%s - %s: %s' % (self.position, self.driverId, self.time)
+
+
+class Lap(FormulaModel):
+    number = Coerced(int)
+    timings = Typed(DataGroup)
+
+    @classmethod
+    def from_dict(cls, kwargs):
+        times = [LapTiming.from_dict(timing) for timing in kwargs.pop('Timings')]
+        kwargs['timings'] = DataGroup(times)
+        return cls(**kwargs)
+
+    def __str__(self):
+        return 'lap' + str(self.number)
+
+    def __repr__(self):
+        return self.to_df()
+
+    def to_row(self):
+        time_rows = [dict({'lap_number': self.number}.items() + this_time.to_row().items())
+                     for this_time in self.timings]
+        return time_rows
+
+
 class Race(FormulaModel):
 
     date = Typed(datetime.datetime)
@@ -207,19 +287,36 @@ class Race(FormulaModel):
     rain = Bool(default=False)         #ToDo: rain should affect prob wreck, safety car, car speeds
 
     circuit = Typed(Circuit)
+
     drivers = Property()
     _drivers = Typed(DataGroup)
+
+    laps = Property()
+    _laps = Typed(DataGroup)
 
     def _get_drivers(self):
         if not self._drivers:
             query = {'year': self.season,
                      'circuit_id': self.circuit.circuitId,
                      'query_type': 'drivers'}
-            self.drivers = DataGroup(self.api.query(**query))
+            self.drivers = self.api.query(**query)
         return self._drivers
 
     def _set_drivers(self, races):
         self._drivers = DataGroup(races)
+
+    def _get_laps(self):
+        if not self._laps:
+            query = {'year': self.season,
+                     'race_num': str(self.round),
+                     'query_type': 'laps'}
+            tmp_season = self.api.query(**query)
+            self.laps = tmp_season.races[0].laps
+
+        return self._laps
+
+    def _set_laps(self, laps):
+        self._laps = laps
 
     @classmethod
     def from_dict(cls, kwargs):
@@ -229,6 +326,8 @@ class Race(FormulaModel):
                                    '%Y-%m-%d %H:%M:%S')
         kwargs['circuit'] = Circuit.from_dict(kwargs.pop('Circuit'))
         kwargs['name'] = kwargs.pop('raceName')
+        if 'Laps' in kwargs:
+            kwargs['laps'] = DataGroup([Lap.from_dict(lap) for lap in kwargs.pop('Laps')])
         return cls(**kwargs)
 
     @property
