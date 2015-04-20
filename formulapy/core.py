@@ -69,11 +69,42 @@ class Location(Atom):
 
 
 class Driver(FormulaModel):
-    def __init__(self, name, num, car, seq_wins=0):
-        self.name = name
-        self.number = num
-        self.car = car
-        self.seq_wins = seq_wins
+    birth_date = Typed(datetime.datetime)
+    driverId = Unicode()
+    shortId = Coerced(str)
+    last = Unicode()
+    first = Unicode()
+    country = Unicode()
+    url = Unicode()
+    number = Coerced(int)
+
+    seasons = Property
+
+    @classmethod
+    def from_dict(cls, kwargs):
+        if 'dateOfBirth' in kwargs.keys():
+            dob = kwargs.pop('dateOfBirth')
+            if dob:
+                kwargs['birth_date'] = datetime.datetime.strptime(dob,
+                                        '%Y-%m-%d')
+        kwargs['last'] = kwargs.pop('familyName')
+        kwargs['first'] = kwargs.pop('givenName')
+        kwargs['country'] = kwargs.pop('nationality')
+
+        if 'permanentNumber' in kwargs.keys():
+            kwargs['number'] = kwargs.pop('permanentNumber')
+
+        if 'code' in kwargs.keys():
+            kwargs['shortId'] = kwargs.pop('code', None)
+
+        return cls(**kwargs)
+
+
+    def __str__(self):
+        return str(self.driverId)
+
+    def __repr__(self):
+        return str(self.first + ' ' + self.last)
 
 
 class Circuit(Atom):
@@ -165,7 +196,7 @@ class PitLane(object):
         return cls #ToDo: allow creation of pitlane from length, speed limit, etc.
 
 
-class Race(Atom):
+class Race(FormulaModel):
 
     date = Typed(datetime.datetime)
     name = Unicode()
@@ -176,7 +207,16 @@ class Race(Atom):
     rain = Bool(default=False)         #ToDo: rain should affect prob wreck, safety car, car speeds
 
     circuit = Typed(Circuit)
-    drivers = List(Typed(Driver))
+    drivers = Property()
+    _drivers = Typed(DataGroup)
+
+    def _get_drivers(self):
+        if not self._drivers:
+            self.drivers = DataGroup(self.api.races(year=self.season))
+        return self._drivers
+
+    def _set_drivers(self, races):
+        self._drivers = DataGroup(races)
 
     @classmethod
     def from_dict(cls, kwargs):
@@ -208,15 +248,15 @@ class Race(Atom):
 class Season(FormulaModel):
     season = Coerced(int)
     races = Property()
-    _races = List(Typed(Race))
+    _races = Typed(DataGroup)
 
     def _get_races(self):
         if not self._races:
-            self.races = self.api.races(year=self.season)
+            self.races = DataGroup(self.api.races(year=self.season))
         return self._races
 
     def _set_races(self, races):
-        self._races = races
+        self._races = DataGroup(races)
 
     @classmethod
     def from_dict(cls, kwargs):
@@ -321,12 +361,20 @@ class Series(object):
     def seasons(self):
         return DataGroup(self._seasons)
 
+    @lazy
+    def _drivers(self):
+        return self._api.drivers
+
+    @property
+    def drivers(self):
+        return DataGroup(self._drivers)
+
     def season(self, year='current'):
         if year == 'current':
             return self.seasons[-1]
         else:
             for season in self.seasons:
-                if season.season == year:
+                if season.query == year:
                     return season
 
 

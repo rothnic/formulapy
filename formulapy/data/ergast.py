@@ -1,6 +1,6 @@
 __author__ = 'nickroth'
 
-from formulapy.core import Season, Series
+from formulapy.core import Season, Series, Driver
 from formulapy.data.core import API
 import pandas as pd
 import slumber
@@ -21,14 +21,14 @@ class ErgastApi(API):
 
     def races(self, year=None):
         if year is not None:
-            season = self.season(year=year)
+            season = self.query(year=year)
             return season.races
 
 
     @property
     def drivers(self):
         options = dict({'drivers': 'drivers'}.items() + ALL_DATA.items())
-        return self.season(year=None, extra_options=options)
+        return self.query(year=None, extra_options=options)
 
     def driver(self, driverId=None, year=None, circuitId=None, constructorId=None,
                 grid_pos=None, result_pos=None, fastest_rank=None, statusId=None):
@@ -37,9 +37,9 @@ class ErgastApi(API):
     @property
     def seasons(self):
         options = dict({'seasons': 'seasons'}.items() + ALL_DATA.items())
-        return self.season(year=None, extra_options=options)
+        return self.query(year=None, extra_options=options)
 
-    def season(self, year=None, circuitId=None, driverId=None, constructorId=None,
+    def query(self, year=None, circuitId=None, driverId=None, constructorId=None,
                grid_pos=None, result_pos=None, fastest_rank=None, statusId=None,
                extra_options=None):
 
@@ -81,6 +81,10 @@ class ErgastApi(API):
         seasons = data.pop('Seasons', None)
         if seasons:
             return [self._parse_season(season) for season in seasons]
+
+        drivers = data.pop('Drivers', None)
+        if drivers:
+            return [Driver.from_dict(driver) for driver in drivers]
 
         if 'season' in data.keys():
             return self._parse_season(data)
@@ -139,6 +143,5 @@ class FormulaE(Series):
 
 if __name__ == '__main__':
 
-    erg = ErgastApi(series='f1')
-    ssn = erg.drivers
-    print(ssn)
+    f1 = Formula1()
+    f1
