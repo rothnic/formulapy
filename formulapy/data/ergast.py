@@ -25,22 +25,34 @@ class ErgastApi(API):
             return season.races
 
     @property
-    def drivers(self):
-        options = dict({'drivers': 'drivers'}.items() + ALL_DATA.items())
-        return self.query(year=None, extra_options=options)
+    def all_drivers(self):
+        return self.query(year=None, query_type='drivers')
 
     def driver(self, driver_id=None, year=None, circuit_id=None, constructor_id=None,
                grid_pos=None, result_pos=None, fastest_rank=None, status_id=None):
         pass
 
     @property
-    def seasons(self):
-        options = dict({'seasons': 'seasons'}.items() + ALL_DATA.items())
-        return self.query(year=None, extra_options=options)
+    def all_seasons(self):
+        return self.query(year=None, query_type='seasons')
+
+    def get_extra_options(self, query_type):
+        if query_type == 'drivers':
+            query_type_dict = {'drivers': 'drivers'}
+        elif query_type == 'seasons':
+            query_type_dict = {'seasons': 'seasons'}
+        else:
+            return None
+
+        return self.combine_dicts(query_type_dict, ALL_DATA)
+
+    @staticmethod
+    def combine_dicts(a, b):
+        return dict(a.items() + b.items())
 
     def query(self, year=None, circuit_id=None, driver_id=None, constructor_id=None,
               grid_pos=None, result_pos=None, fastest_rank=None, status_id=None,
-              extra_options=None):
+              query_type=None):
 
         options = {'circuits': circuit_id,
                    'drivers': driver_id,
@@ -50,8 +62,8 @@ class ErgastApi(API):
                    'fastest': fastest_rank,
                    'status': status_id}
 
-        if extra_options is not None:
-            options = dict(options.items() + extra_options.items())
+        if query_type is not None:
+            options = self.get_extra_options(query_type=query_type)
 
         query = self._get_base_query(year)
         query = self._add_query_options(query, options)

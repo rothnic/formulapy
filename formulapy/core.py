@@ -212,7 +212,10 @@ class Race(FormulaModel):
 
     def _get_drivers(self):
         if not self._drivers:
-            self.drivers = DataGroup(self.api.races(year=self.season))
+            query = {'year': self.season,
+                     'circuit_id': self.circuit.circuitId,
+                     'query_type': 'drivers'}
+            self.drivers = DataGroup(self.api.query(**query))
         return self._drivers
 
     def _set_drivers(self, races):
@@ -355,7 +358,7 @@ class Series(object):
 
     @lazy
     def _seasons(self):
-        return self._api.seasons
+        return self._api.all_seasons
 
     @property
     def seasons(self):
@@ -374,7 +377,7 @@ class Series(object):
             return self.seasons[-1]
         else:
             for season in self.seasons:
-                if season.query == year:
+                if season.season == year:
                     return season
 
 
