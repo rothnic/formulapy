@@ -2,12 +2,13 @@ __author__ = 'nickroth'
 
 from formulapy.core import Season, Series, Driver
 from formulapy.data.core import API
-import pandas as pd
 import slumber
 import json
 
+# constants
 ERGAST_URL = 'http://ergast.com/api/'
 ALL_DATA = {'?limit=1000': '?limit=1000'}
+
 
 class ErgastApi(API):
 
@@ -18,20 +19,18 @@ class ErgastApi(API):
         self.series = series
         self.api = slumber.API(self.base_url, append_slash=False)
 
-
     def races(self, year=None):
         if year is not None:
             season = self.query(year=year)
             return season.races
-
 
     @property
     def drivers(self):
         options = dict({'drivers': 'drivers'}.items() + ALL_DATA.items())
         return self.query(year=None, extra_options=options)
 
-    def driver(self, driverId=None, year=None, circuitId=None, constructorId=None,
-                grid_pos=None, result_pos=None, fastest_rank=None, statusId=None):
+    def driver(self, driver_id=None, year=None, circuit_id=None, constructor_id=None,
+               grid_pos=None, result_pos=None, fastest_rank=None, status_id=None):
         pass
 
     @property
@@ -39,17 +38,17 @@ class ErgastApi(API):
         options = dict({'seasons': 'seasons'}.items() + ALL_DATA.items())
         return self.query(year=None, extra_options=options)
 
-    def query(self, year=None, circuitId=None, driverId=None, constructorId=None,
-               grid_pos=None, result_pos=None, fastest_rank=None, statusId=None,
-               extra_options=None):
+    def query(self, year=None, circuit_id=None, driver_id=None, constructor_id=None,
+              grid_pos=None, result_pos=None, fastest_rank=None, status_id=None,
+              extra_options=None):
 
-        options = {'circuits': circuitId,
-                   'drivers': driverId,
-                   'constructors': constructorId,
+        options = {'circuits': circuit_id,
+                   'drivers': driver_id,
+                   'constructors': constructor_id,
                    'grid': grid_pos,
                    'results': result_pos,
                    'fastest': fastest_rank,
-                   'status': statusId}
+                   'status': status_id}
 
         if extra_options is not None:
             options = dict(options.items() + extra_options.items())
@@ -126,7 +125,8 @@ class ErgastApi(API):
         else:
             raise ValueError
 
-    def _validate(self, url):
+    @staticmethod
+    def _validate(url):
         return True
 
 
