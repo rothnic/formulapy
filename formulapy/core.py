@@ -1,43 +1,81 @@
 __author__ = 'nickroth'
 
-from atom.api import Atom, Unicode, Typed, Coerced, List, Bool, Property, Callable
+from atom.api import Atom, Unicode, Typed, Coerced, List, Bool, Property, Callable, ForwardInstance
 import datetime
 import pandas as pd
+from pandas import DataFrame
 from lazy.lazy import lazy
 from formulapy.data.core import API
 from formulapy.utils import variablize
+
+from formulapy.plots import lap_box_plot
+
+
+pd.set_option('display.notebook_repr_html', True)
 
 
 class DataGroup(object):
     """Enables dot notation into named members of a list."""
 
-    def __init__(self, data_list):
-        for data in data_list:
-            setattr(self, str(data), data)
-        self.data = data_list
+    def __init__(self, items):
+        if not isinstance(items, list):
+            items = [items]
+
+        for item in items:
+            setattr(self, item.__id__, item)
+
+        self._items = items
+        rows = []
+        for item in items:
+            row = item.to_row()
+            if isinstance(row, list):
+                rows.extend(row)
+            else:
+                rows.append(row)
+
+        self.df = pd.DataFrame(rows)
+
+    def __getattr__(self, attr):
+        methods = [method for method in dir(object) if callable(getattr(object, method))]
+        try:
+            return getattr(self.df, attr)
+        except AttributeError:
+            return object.__getattribute__(self, attr)
+
+    def __len__(self):
+        return len(self.df)
+
+    def __repr__(self):
+        return repr(self.df)
 
     def __getitem__(self, query):
+        items = self._items
         if isinstance(query, int):
-            return self.data[query]
+            return items[query]
         elif isinstance(query, dict):
             filtered_data = []
-            for data_item in self.data:
+            for data_item in items:
                 if all([getattr(data_item, k) == v for k, v in query.iteritems()]):
                     filtered_data.append(data_item)
             return filtered_data
 
-    def __repr__(self):
-        return str([str(data) for data in self.data])
 
-    def to_df(self):
-        all_rows = []
-        for data_item in self.data:
-            rows = data_item.to_row()
-            all_rows.extend(rows)
-        return pd.DataFrame(all_rows)
+class Drivers(DataGroup):
+    pass
 
-    def __len__(self):
-        return len(self.data)
+
+class Seasons(DataGroup):
+    pass
+
+
+class Races(DataGroup):
+    pass
+
+
+class Laps(DataGroup):
+
+    def box_plot(self):
+        return lap_box_plot(self.df)
 
 
 class ApiRegistry(object):
@@ -74,6 +112,10 @@ class FormulaModel(Atom):
     def _set_api(self, api):
         self._api = api
 
+    @property
+    def __id__(self):
+        return str(self)
+
 
 class Location(Atom):
     country = Unicode()
@@ -92,7 +134,17 @@ class Driver(FormulaModel):
     url = Unicode()
     number = Coerced(int)
 
-    seasons = Property
+    seasons = Property()
+    _seasons = Typed(Seasons)
+
+    def _get_seasons(self):
+        if not self._seasons:
+            self.seasons = Seasons(self.api.query(driver_id=self.driverId,
+                                                  query_type='seasons'))
+        return self._seasons
+
+    def _set_seasons(self, seasons):
+        self._seasons = seasons
 
     @classmethod
     def from_dict(cls, kwargs):
@@ -113,12 +165,21 @@ class Driver(FormulaModel):
 
         return cls(**kwargs)
 
-
     def __str__(self):
         return str(self.driverId)
 
     def __repr__(self):
         return str(self.first + ' ' + self.last)
+
+    def to_row(self):
+        return {'birth_date': self.birth_date,
+                'driverId': self.driverId,
+                'shortId': self.shortId,
+                'last': self.last,
+                'first': self.first,
+                'country': self.country,
+                'number': self.number,
+                'object': self}
 
 
 class Circuit(Atom):
@@ -267,9 +328,6 @@ class Lap(FormulaModel):
     def __str__(self):
         return 'lap' + str(self.number)
 
-    def __repr__(self):
-        return self.to_df()
-
     def to_row(self):
         time_rows = [dict({'lap_number': self.number}.items() + this_time.to_row().items())
                      for this_time in self.timings]
@@ -289,10 +347,10 @@ class Race(FormulaModel):
     circuit = Typed(Circuit)
 
     drivers = Property()
-    _drivers = Typed(DataGroup)
+    _drivers = Typed(Drivers)
 
     laps = Property()
-    _laps = Typed(DataGroup)
+    _laps = Typed(Laps)
 
     def _get_drivers(self):
         if not self._drivers:
@@ -321,13 +379,17 @@ class Race(FormulaModel):
     @classmethod
     def from_dict(cls, kwargs):
         date = kwargs.pop('date')
-        race_time = kwargs.pop('time')
-        kwargs['date'] = datetime.datetime.strptime(date + ' ' + race_time[:-1],
-                                   '%Y-%m-%d %H:%M:%S')
+        if 'time' in kwargs.keys():
+            race_time = kwargs.pop('time')
+            kwargs['date'] = datetime.datetime.strptime(date + ' ' + race_time[:-1],
+                                    '%Y-%m-%d %H:%M:%S')
+        else:
+            kwargs['date'] = datetime.datetime.strptime(date, '%Y-%m-%d')
+
         kwargs['circuit'] = Circuit.from_dict(kwargs.pop('Circuit'))
         kwargs['name'] = kwargs.pop('raceName')
         if 'Laps' in kwargs:
-            kwargs['laps'] = DataGroup([Lap.from_dict(lap) for lap in kwargs.pop('Laps')])
+            kwargs['laps'] = Laps([Lap.from_dict(lap) for lap in kwargs.pop('Laps')])
         return cls(**kwargs)
 
     @property
@@ -350,15 +412,18 @@ class Race(FormulaModel):
 class Season(FormulaModel):
     season = Coerced(int)
     races = Property()
-    _races = Typed(DataGroup)
+    _races = Typed(Races)
 
     def _get_races(self):
         if not self._races:
-            self.races = DataGroup(self.api.races(year=self.season))
+            self.races = self.api.races(year=self.season)
         return self._races
 
     def _set_races(self, races):
-        self._races = DataGroup(races)
+        if not isinstance(races, Races):
+            self._races = Races(races)
+        else:
+            self._races = races
 
     @classmethod
     def from_dict(cls, kwargs):
@@ -378,10 +443,17 @@ class Season(FormulaModel):
             rows = {'season': self.season}
         return rows
 
+    def to_row(self):
+        return {'season': self.season}
+
     def to_df(self):
         return pd.DataFrame(self.to_rows())
 
-    def __str__(self):
+    def __repr__(self):
+        return self.__id__
+
+    @property
+    def __id__(self):
         return 's' + str(self.season)
 
 
@@ -461,15 +533,15 @@ class Series(object):
 
     @property
     def seasons(self):
-        return DataGroup(self._seasons)
+        return Seasons(items=self._seasons)
 
     @lazy
     def _drivers(self):
-        return self._api.drivers
+        return self._api.all_drivers
 
     @property
     def drivers(self):
-        return DataGroup(self._drivers)
+        return Drivers(self._drivers)
 
     def season(self, year='current'):
         if year == 'current':

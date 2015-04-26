@@ -199,19 +199,19 @@ class ErgastApi(API):
         return True
 
 
-class Formula1(Series):
-    def __init__(self):
-        super(Formula1, self).__init__(api=ErgastApi(series='f1'))
+# class Formula1(Series):
+#     def __init__(self):
+#         super(Formula1, self).__init__(api=ErgastApi(series='f1'))
+#
+#
+# class FormulaE(Series):
+#     def __init__(self):
+#         super(FormulaE, self).__init__(api=ErgastApi(series='fe'))
 
-
-class FormulaE(Series):
-    def __init__(self):
-        super(FormulaE, self).__init__(api=ErgastApi(series='fe'))
-
+Formula1 = Series(api=ErgastApi(series='f1'))
 
 
 if __name__ == '__main__':
 
-    f1 = Formula1()
-    laps = f1.seasons.s2015.races.BahrainGrandPrix_4.laps
-    laps
+    f1 = Formula1
+    f1.seasons.s2015.races.BahrainGrandPrix_4.laps
