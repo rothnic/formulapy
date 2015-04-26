@@ -214,4 +214,4 @@ Formula1 = Series(api=ErgastApi(series='f1'))
 if __name__ == '__main__':
 
     f1 = Formula1
-    f1.seasons.s2015.races.BahrainGrandPrix_4.laps
+    f1.seasons.s2015.races.BahrainGrandPrix_4.laps.df

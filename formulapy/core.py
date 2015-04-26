@@ -3,12 +3,13 @@ __author__ = 'nickroth'
 from atom.api import Atom, Unicode, Typed, Coerced, List, Bool, Property, Callable, ForwardInstance
 import datetime
 import pandas as pd
+from copy import copy
 from pandas import DataFrame
 from lazy.lazy import lazy
 from formulapy.data.core import API
 from formulapy.utils import variablize
 
-from formulapy.plots import lap_box_plot
+from formulapy.plots import lap_box_plot, lap_dist_plot
 
 
 pd.set_option('display.notebook_repr_html', True)
@@ -20,20 +21,29 @@ class DataGroup(object):
     def __init__(self, items):
         if not isinstance(items, list):
             items = [items]
+        elif isinstance(items, DataGroup):
+            items = items._items
 
         for item in items:
             setattr(self, item.__id__, item)
 
         self._items = items
+        rows = self.to_row()
+        self.df = pd.DataFrame(rows)
+
+    def make_slice(self, items):
+        return self.__class__(items)
+
+    def to_row(self):
         rows = []
-        for item in items:
+        for item in self._items:
             row = item.to_row()
+
             if isinstance(row, list):
                 rows.extend(row)
             else:
                 rows.append(row)
-
-        self.df = pd.DataFrame(rows)
+        return rows
 
     def __getattr__(self, attr):
         methods = [method for method in dir(object) if callable(getattr(object, method))]
@@ -48,16 +58,12 @@ class DataGroup(object):
     def __repr__(self):
         return repr(self.df)
 
-    def __getitem__(self, query):
-        items = self._items
-        if isinstance(query, int):
-            return items[query]
-        elif isinstance(query, dict):
-            filtered_data = []
-            for data_item in items:
-                if all([getattr(data_item, k) == v for k, v in query.iteritems()]):
-                    filtered_data.append(data_item)
-            return filtered_data
+    def __getitem__(self, i):
+        if isinstance(i, slice):
+            tmp = copy(self._items)
+            return self.make_slice(tmp[i])
+        else:
+            return self._items[i]
 
 
 class Drivers(DataGroup):
@@ -74,8 +80,19 @@ class Races(DataGroup):
 
 class Laps(DataGroup):
 
-    def box_plot(self):
-        return lap_box_plot(self.df)
+    def __init__(self, items, race):
+        super(Laps, self).__init__(items)
+        self.race = race
+
+    def driver_box_plot(self, **kwargs):
+        if not kwargs.pop('title', None):
+            kwargs['title'] = repr(self.race)
+        return lap_box_plot(self.df, **kwargs)
+
+    def driver_dist_plot(self, **kwargs):
+        if not kwargs.pop('title', None):
+            kwargs['title'] = repr(self.race)
+        return lap_dist_plot(self.df, **kwargs)
 
 
 class ApiRegistry(object):
@@ -374,6 +391,8 @@ class Race(FormulaModel):
         return self._laps
 
     def _set_laps(self, laps):
+        if not isinstance(laps, Laps):
+            laps = Laps(laps, race=self)
         self._laps = laps
 
     @classmethod
@@ -389,7 +408,7 @@ class Race(FormulaModel):
         kwargs['circuit'] = Circuit.from_dict(kwargs.pop('Circuit'))
         kwargs['name'] = kwargs.pop('raceName')
         if 'Laps' in kwargs:
-            kwargs['laps'] = Laps([Lap.from_dict(lap) for lap in kwargs.pop('Laps')])
+            kwargs['laps'] = [Lap.from_dict(lap) for lap in kwargs.pop('Laps')]
         return cls(**kwargs)
 
     @property
