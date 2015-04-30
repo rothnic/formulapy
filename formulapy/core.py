@@ -3,136 +3,13 @@ __author__ = 'nickroth'
 from atom.api import Atom, Unicode, Typed, Coerced, List, Bool, Property, Callable, ForwardInstance
 import datetime
 import pandas as pd
-from copy import copy
-from pandas import DataFrame
 from lazy.lazy import lazy
-from formulapy.data.core import API
+
 from formulapy.utils import variablize
-
-from formulapy.plots import lap_box_plot, lap_dist_plot
-
+from formulapy.collections import DataGroup, Drivers, Laps, Races, Seasons
+from formulapy.mixins import registry, FormulaModel
 
 pd.set_option('display.notebook_repr_html', True)
-
-
-class DataGroup(object):
-    """Enables dot notation into named members of a list."""
-
-    def __init__(self, items):
-        if not isinstance(items, list):
-            items = [items]
-        elif isinstance(items, DataGroup):
-            items = items._items
-
-        for item in items:
-            setattr(self, item.__id__, item)
-
-        self._items = items
-        rows = self.to_row()
-        self.df = pd.DataFrame(rows)
-
-    def make_slice(self, items):
-        return self.__class__(items)
-
-    def to_row(self):
-        rows = []
-        for item in self._items:
-            row = item.to_row()
-
-            if isinstance(row, list):
-                rows.extend(row)
-            else:
-                rows.append(row)
-        return rows
-
-    def __getattr__(self, attr):
-        methods = [method for method in dir(object) if callable(getattr(object, method))]
-        try:
-            return getattr(self.df, attr)
-        except AttributeError:
-            return object.__getattribute__(self, attr)
-
-    def __len__(self):
-        return len(self.df)
-
-    def __repr__(self):
-        return repr(self.df)
-
-    def __getitem__(self, i):
-        if isinstance(i, slice):
-            tmp = copy(self._items)
-            return self.make_slice(tmp[i])
-        else:
-            return self._items[i]
-
-
-class Drivers(DataGroup):
-    pass
-
-
-class Seasons(DataGroup):
-    pass
-
-
-class Races(DataGroup):
-    pass
-
-
-class Laps(DataGroup):
-
-    def __init__(self, items, race):
-        super(Laps, self).__init__(items)
-        self.race = race
-
-    def driver_box_plot(self, **kwargs):
-        if not kwargs.pop('title', None):
-            kwargs['title'] = repr(self.race)
-        return lap_box_plot(self.df, **kwargs)
-
-    def driver_dist_plot(self, **kwargs):
-        if not kwargs.pop('title', None):
-            kwargs['title'] = repr(self.race)
-        return lap_dist_plot(self.df, **kwargs)
-
-
-class ApiRegistry(object):
-    """Global registry for API calls, so each nested object doesn't need reference."""
-
-    def __init__(self):
-        self._api = None
-
-    @property
-    def api(self):
-        return self._api
-
-    def register(self, api):
-        if self._api is None:
-            self._api = api
-
-
-# Create the global registry
-registry = ApiRegistry()
-
-
-class FormulaModel(Atom):
-    """Base class to provide reference to the registered api."""
-
-    api = Property()
-    _api = Typed(API)
-
-    def _get_api(self):
-        if registry.api is not None:
-            return registry.api
-        else:
-            raise EnvironmentError('API has not been registered.')
-
-    def _set_api(self, api):
-        self._api = api
-
-    @property
-    def __id__(self):
-        return str(self)
-
 
 class Location(Atom):
     country = Unicode()
@@ -430,8 +307,12 @@ class Race(FormulaModel):
 
 class Season(FormulaModel):
     season = Coerced(int)
+
     races = Property()
     _races = Typed(Races)
+
+    drivers = Property()
+    _drivers = Typed(Drivers)
 
     def _get_races(self):
         if not self._races:
@@ -443,6 +324,17 @@ class Season(FormulaModel):
             self._races = Races(races)
         else:
             self._races = races
+
+    def _get_drivers(self):
+        if not self._drivers:
+            self.drivers = self.api.query(year=self.season, query_type='drivers')
+        return self._drivers
+
+    def _set_drivers(self, drivers):
+        if not isinstance(drivers, Drivers):
+            self._drivers = Drivers(drivers)
+        else:
+            self._drivers = drivers
 
     @classmethod
     def from_dict(cls, kwargs):
@@ -569,5 +461,3 @@ class Series(object):
             for season in self.seasons:
                 if season.season == year:
                     return season
-
-

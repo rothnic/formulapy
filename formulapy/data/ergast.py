@@ -4,7 +4,6 @@ from formulapy.core import Season, Series, Driver
 from formulapy.data.core import API
 import slumber
 import json
-from copy import copy
 
 # constants
 ERGAST_URL = 'http://ergast.com/api/'

@@ -59,10 +59,20 @@ We might want to run the simulation far in advance, then update the statistics w
 So, given information on qualification, or even real time information of how the race is unfolding, 
 we should be able to reduce the uncertainty of the prediction as we get more data.
 
-Data Storage
+Data Sources
 ````````````
 
-For now, I'll plan on using CSVs to store the data since there isn't massive amounts of F1 data that I'm aware of, 
+The primary data source will be the Ergast API. This library interfaces with the REST API primarily, to avoid each user
+having to stand up a local mysql database, which is the format that the Ergast data can be downloaded in. The approach
+will aim to make it modular so that the database could be switched in, instead of the rest api.
+
+Rest API ToDo:
+* Generic Query Capability
+* Series -> Seasons
+* Series -> Drivers
+* Series -> Constructors
+
+I'll plan on using CSVs to store supplemental data since there isn't massive amounts of F1 data that I'm aware of,
 and ease of use for contributions.
 
 
