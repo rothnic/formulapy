@@ -1,6 +1,6 @@
 __author__ = 'nickroth'
 
-from formulapy.core import Season, Series, Driver
+from formulapy.core import Season, Series, Driver, Standing, ConstructorStanding, DriverStanding
 from formulapy.data.core import API
 import slumber
 import json
@@ -133,6 +133,18 @@ class ErgastApi(API):
             return [Driver.from_dict(driver) for driver in drivers]
 
         if 'season' in data.keys():
+            if 'StandingsLists' in data.keys():
+                standing_lists = data.pop('StandingsLists')
+                standing_list = standing_lists[0]
+                if 'DriverStandings' in standing_list:
+                    key = 'DriverStandings'
+                    standing_type = DriverStanding
+                else:
+                    key = 'ConstructorStandings'
+                    standing_type = ConstructorStanding
+
+                return [standing_type.from_dict(standing) for standing in standing_list[key]]
+
             return self._parse_season(data)
 
     @staticmethod
@@ -213,4 +225,4 @@ Formula1 = Series(api=ErgastApi(series='f1'))
 if __name__ == '__main__':
 
     f1 = Formula1
-    f1.seasons.s2015.races.BahrainGrandPrix_4.laps.df
+    f1.seasons.s2015.races.BahrainGrandPrix_4.standings.constructors

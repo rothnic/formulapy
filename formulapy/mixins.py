@@ -41,4 +41,11 @@ class FormulaModel(Atom):
 
     @property
     def __id__(self):
-        return str(self)
+        return self.__str__()
+
+    @classmethod
+    def from_dict(cls, kwargs):
+        raise NotImplementedError
+
+    def to_row(self):
+        raise NotImplementedError

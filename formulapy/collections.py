@@ -70,6 +70,14 @@ class Races(DataGroup):
     pass
 
 
+class Constructors(DataGroup):
+    pass
+
+
+class Standings(DataGroup):
+    pass
+
+
 class Laps(DataGroup):
 
     def __init__(self, items, race):

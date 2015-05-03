@@ -4,10 +4,12 @@ from atom.api import Atom, Unicode, Typed, Coerced, List, Bool, Property, Callab
 import datetime
 import pandas as pd
 from lazy.lazy import lazy
+import copy
 
 from formulapy.utils import variablize
-from formulapy.collections import DataGroup, Drivers, Laps, Races, Seasons
+from formulapy.collections import DataGroup, Drivers, Laps, Races, Seasons, Constructors, Standings
 from formulapy.mixins import registry, FormulaModel
+from addict import Dict
 
 pd.set_option('display.notebook_repr_html', True)
 
@@ -16,6 +18,24 @@ class Location(Atom):
     lat = Coerced(float)
     long = Coerced(float)
     locality = Unicode()
+
+
+class Constructor(FormulaModel):
+    name = Unicode()
+    constructorId = Unicode()
+    nationality = Unicode()
+    url = Unicode()
+
+    @classmethod
+    def from_dict(cls, kwargs):
+        return cls(**kwargs)
+
+    def to_row(self):
+        dict_props = ['name', 'constructorId', 'nationality', 'url']
+        return {k: getattr(self, k) for k in dict_props}
+
+    def __str__(self):
+        return self.constructorId
 
 
 class Driver(FormulaModel):
@@ -228,6 +248,62 @@ class Lap(FormulaModel):
         return time_rows
 
 
+class Standing(FormulaModel):
+    constructor = Typed(Constructors)
+    position = Coerced(int)
+    points = Coerced(float)
+    wins = Coerced(int)
+
+    @classmethod
+    def from_dict(cls, kwargs):
+        kwargs.pop('positionText')
+
+        # possible to have multiple constructors per driver, so we group the constructors here by default, per the api
+        if 'Constructor' in kwargs.keys():
+            kwargs['constructor'] = Constructors([Constructor.from_dict(kwargs.pop('Constructor'))])
+        else:
+            kwargs['constructor'] = Constructors([Constructor.from_dict(constructor) for constructor in kwargs.pop('Constructors')])
+        return cls(**kwargs)
+
+    def to_row(self):
+        rows = []
+        base_row = {'position': self.position, 'points': self.points, 'wins': self.wins}
+
+        for constructor in self.constructor:
+            row = copy.copy(base_row)
+            row['constructor'] = constructor.constructorId
+            rows.append(row)
+
+        return rows
+
+
+class ConstructorStanding(Standing):
+
+    def __str__(self):
+        return str(self.constructor)
+
+
+class DriverStanding(Standing):
+    driver = Typed(Driver)
+
+    @classmethod
+    def from_dict(cls, kwargs):
+        kwargs['driver'] = Driver.from_dict(kwargs.pop('Driver'))
+        return super(DriverStanding, cls).from_dict(kwargs)
+
+    def __str__(self):
+        return str(self.driver)
+
+    def to_row(self):
+        rows = super(DriverStanding, self).to_row()
+
+        # Only difference compared to constructors is to add the driver id
+        for row in rows:
+            row['driver'] = self.driver.driverId
+
+        return rows
+
+
 class Race(FormulaModel):
 
     date = Typed(datetime.datetime)
@@ -246,6 +322,9 @@ class Race(FormulaModel):
     laps = Property()
     _laps = Typed(Laps)
 
+    standings = Property()
+    _standings = Typed(Dict)
+
     def _get_drivers(self):
         if not self._drivers:
             query = {'year': self.season,
@@ -254,8 +333,8 @@ class Race(FormulaModel):
             self.drivers = self.api.query(**query)
         return self._drivers
 
-    def _set_drivers(self, races):
-        self._drivers = DataGroup(races)
+    def _set_drivers(self, drivers):
+        self._drivers = Drivers(drivers)
 
     def _get_laps(self):
         if not self._laps:
@@ -271,6 +350,28 @@ class Race(FormulaModel):
         if not isinstance(laps, Laps):
             laps = Laps(laps, race=self)
         self._laps = laps
+
+    def _get_standings(self):
+        if not self._standings:
+            query = {'year': self.season,
+                     'race_num': str(self.round),
+                     'query_type': 'driverStandings'}
+            driver_standings = Standings(self.api.query(**query))
+
+            query = {'year': self.season,
+                     'race_num': str(self.round),
+                     'query_type': 'constructorStandings'}
+            constructor_standings = Standings(self.api.query(**query))
+
+            standings_group = Dict()
+            standings_group.drivers = driver_standings
+            standings_group.constructors = constructor_standings
+            self.standings = standings_group
+
+        return self._standings
+
+    def _set_standings(self, standings):
+        self._standings = standings
 
     @classmethod
     def from_dict(cls, kwargs):
@@ -314,6 +415,9 @@ class Season(FormulaModel):
     drivers = Property()
     _drivers = Typed(Drivers)
 
+    constructors = Property()
+    _constructors = Typed(Constructors)
+
     def _get_races(self):
         if not self._races:
             self.races = self.api.races(year=self.season)
@@ -335,6 +439,17 @@ class Season(FormulaModel):
             self._drivers = Drivers(drivers)
         else:
             self._drivers = drivers
+
+    def _get_constructors(self):
+        if not self._constructors:
+            self.constructors = self.api.query(year=self.season, query_type='constructors')
+        return self._constructors
+
+    def _set_constructors(self, constructors):
+        if not isinstance(constructors, Drivers):
+            self._constructors = Drivers(constructors)
+        else:
+            self._constructors = constructors
 
     @classmethod
     def from_dict(cls, kwargs):
