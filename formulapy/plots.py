@@ -44,6 +44,32 @@ def lap_box_plot(laps, pit_laps=True, title=''):
 
     return ax
 
+def time_box_plot(data, time_field, id_field, pit_laps=True, std=3, title=''):
+    """A generalized box plot that supports generic formatted dataframe with time and id fields."""
+
+    # sort laps by finish order, where not all finish on the last lap
+    def add_min(group):
+        group['min_time'] = group[time_field].min()
+        return group
+
+    data = data.groupby(id_field).apply(add_min)
+    time_order = data.sort(['min_time']).name.unique()
+
+    x_label = LAP_TIME_LABEL
+    if not pit_laps:
+        data = filter_pit_laps(data, time_field=time_field, id_field=id_field, n_std=std)
+        x_label += ' (pit laps/outliers filtered)'
+
+    ids = reversed(list(time_order))
+    ids = [str(item) for item in ids]
+
+    ax = sns.boxplot(data[time_field], data[id_field], names=ids, order=ids, vert=False)
+    plt.title(title)
+    plt.ylabel('Driver (sorted by min lap time)')
+    plt.xlabel(x_label)
+
+    return ax
+
 
 def lap_dist_plot(laps, drivers, pit_laps=True, title=''):
 
